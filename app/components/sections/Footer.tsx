@@ -1,0 +1,55 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowUp } from 'lucide-react';
+import { useScrollPosition } from '@/app/lib/hooks/useScrollPosition';
+import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
+
+/**
+ * Footer with copyright, scroll-to-top button that fades in after 300px of scroll.
+ */
+export function Footer() {
+  const scrollPosition = useScrollPosition();
+  const { scrollTo } = useSmoothScroll();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    setShowScrollTop(scrollPosition > 300);
+  }, [scrollPosition]);
+
+  return (
+    <footer className="bg-[#1a1a18] border-t border-[#3a3a38]" role="contentinfo">
+      <div className="max-w-[1200px] mx-auto px-20 max-md:px-6 py-8 flex justify-between items-center">
+        <div>
+          <p className="text-[#888884] text-sm">
+            © 2024 Paras Negi. All rights reserved.
+          </p>
+          <p className="text-[#3a3a38] text-xs mt-1">
+            Built with Next.js · GSAP · D3.js · Framer Motion
+          </p>
+        </div>
+
+        {/* Scroll to top */}
+        <AnimatePresence>
+          {showScrollTop && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => scrollTo('#top')}
+              className="p-3 bg-[#2a2a28] rounded-xl hover:bg-[#e07040] transition-colors duration-300 group"
+              aria-label="Scroll to top of page"
+            >
+              <ArrowUp
+                size={20}
+                className="text-[#888884] group-hover:text-[#0d0d0c] transition-colors"
+              />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+    </footer>
+  );
+}

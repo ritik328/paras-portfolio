@@ -1,0 +1,427 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronDown, ArrowRight, Send, Settings, RotateCcw, X, Sliders } from 'lucide-react';
+import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
+import { InteractiveMap } from '@/app/components/canvas/InteractiveMap';
+
+interface LayoutSettings {
+  textWidth: number; // Left column percentage
+  mapWidth: number;  // Right column percentage
+  textScale: number;
+  mapScale: number;
+  textX: number;
+  textY: number;
+  mapX: number;
+  mapY: number;
+  gap: number;
+}
+
+const DEFAULT_SETTINGS: LayoutSettings = {
+  textWidth: 45,
+  mapWidth: 55,
+  textScale: 1.0,
+  mapScale: 1.0,
+  textX: 0,
+  textY: 0,
+  mapX: 0,
+  mapY: 0,
+  gap: 48,
+};
+
+/**
+ * Responsive split-screen hero section.
+ * Features an interactive visual editor that can be triggered by triple-clicking
+ * the Hero title, Navbar logo, or Skills header.
+ */
+export function Hero() {
+  const { scrollTo } = useSmoothScroll();
+  const [settings, setSettings] = useState<LayoutSettings>(DEFAULT_SETTINGS);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  const lastClickRef = useRef<number>(0);
+  const clickCountRef = useRef<number>(0);
+
+  // Responsive layout check
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Load settings from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('hero-layout-settings');
+    if (saved) {
+      try {
+        setSettings(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse layout settings', e);
+      }
+    }
+  }, []);
+
+  // Listen to the global event dispatched from other components (triple click)
+  useEffect(() => {
+    const handleToggle = () => {
+      setIsEditorOpen((prev) => !prev);
+    };
+    window.addEventListener('toggle-hero-editor', handleToggle);
+    return () => window.removeEventListener('toggle-hero-editor', handleToggle);
+  }, []);
+
+  const updateSetting = (key: keyof LayoutSettings, value: number) => {
+    const updated = { ...settings, [key]: value };
+    if (key === 'textWidth') {
+      updated.mapWidth = 100 - value; // Auto-calculate map column to sum to 100
+    }
+    setSettings(updated);
+    localStorage.setItem('hero-layout-settings', JSON.stringify(updated));
+  };
+
+  const resetSettings = () => {
+    setSettings(DEFAULT_SETTINGS);
+    localStorage.setItem('hero-layout-settings', JSON.stringify(DEFAULT_SETTINGS));
+  };
+
+  const handleTitleClick = () => {
+    const now = Date.now();
+    if (now - lastClickRef.current < 800) {
+      clickCountRef.current += 1;
+    } else {
+      clickCountRef.current = 1;
+    }
+    lastClickRef.current = now;
+
+    if (clickCountRef.current >= 3) {
+      setIsEditorOpen((prev) => !prev);
+      clickCountRef.current = 0;
+    }
+  };
+
+  return (
+    <section
+      id="top"
+      className="relative w-full min-h-screen bg-[#0d0d0c] overflow-hidden flex flex-col justify-center pt-20 md:pt-0"
+      aria-label="Hero section"
+    >
+      {/* Background visual subtle gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(circle at 80% 20%, rgba(224, 112, 64, 0.05) 0%, transparent 50%)',
+        }}
+      />
+
+      <div
+        className="max-w-[1200px] w-full mx-auto px-6 md:px-20 z-10 grid md:grid-cols-2 items-center my-auto py-12 transition-all duration-300"
+        style={{
+          gridTemplateColumns: isLargeScreen
+            ? `${settings.textWidth}% ${settings.mapWidth}%`
+            : undefined,
+          gap: `${settings.gap}px`,
+        }}
+      >
+        {/* Left Column: Typography & CTAs */}
+        <div
+          className="flex flex-col justify-center text-left"
+          style={{
+            transform: `translate(${settings.textX}px, ${settings.textY}px) scale(${settings.textScale})`,
+            transformOrigin: 'left center',
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          >
+            <span className="text-[#e07040] font-mono text-sm tracking-wider uppercase mb-3 block font-semibold">
+              Available for Opportunities
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
+            className="text-hero text-[#f0ede6] mb-4 tracking-tight cursor-pointer select-none"
+            onClick={handleTitleClick}
+            title="Triple click to open layout editor"
+          >
+            Paras Negi
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
+            className="text-xl md:text-2xl text-[#c8b89a] font-serif mb-5"
+          >
+            Full-Stack Developer
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.45, ease: 'easeOut' }}
+            className="text-[#888884] text-base md:text-lg mb-8 leading-relaxed max-w-xl"
+          >
+            I build elegant, high-performance web applications with robust backends and interactive user interfaces.
+            Explore my interactive skills web to see my technical toolkit in action.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="flex flex-wrap gap-2 mb-8"
+          >
+            {['Python', 'React.js', 'Django', 'Node.js', 'MERN Stack'].map((tech) => (
+              <span
+                key={tech}
+                className="px-3 py-1 text-xs font-mono bg-[#1a1a18] text-[#888884] rounded-full border border-[#3a3a38]"
+              >
+                {tech}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* Action Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.75 }}
+            className="flex flex-wrap gap-4"
+          >
+            <button
+              onClick={() => scrollTo('#projects')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#e07040] text-[#0d0d0c] rounded-xl hover:bg-[#c8b89a] transition-all duration-300 font-medium text-sm hover:translate-y-[-2px] shadow-lg shadow-[#e07040]/10"
+            >
+              <span>View My Work</span>
+              <ArrowRight size={16} />
+            </button>
+
+            <button
+              onClick={() => scrollTo('#contact')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a1a18] text-[#f0ede6] border border-[#3a3a38] rounded-xl hover:border-[#e07040] hover:text-[#e07040] transition-all duration-300 font-medium text-sm hover:translate-y-[-2px]"
+            >
+              <span>Get in Touch</span>
+              <Send size={14} />
+            </button>
+          </motion.div>
+        </div>
+
+        {/* Right Column: Interactive Map Container */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+          className="w-full aspect-[8/5] relative overflow-visible group"
+          style={{
+            transform: `translate(${settings.mapX}px, ${settings.mapY}px) scale(${settings.mapScale})`,
+            transformOrigin: 'center center',
+          }}
+        >
+          <InteractiveMap />
+        </motion.div>
+      </div>
+
+      {/* Floating Layout Settings Editor Panel */}
+      {isEditorOpen && (
+        <div className="fixed bottom-6 right-6 z-50 w-80 bg-[#161614]/95 backdrop-blur-md border border-[#3a3a38] rounded-2xl p-5 shadow-2xl animate-fade-in text-left">
+          <div className="flex justify-between items-center mb-4 border-b border-[#3a3a38] pb-3">
+            <div className="flex items-center gap-2">
+              <Sliders size={16} className="text-[#e07040]" />
+              <h3 className="font-sans font-bold text-sm text-[#f0ede6]">Hero Layout Editor</h3>
+            </div>
+            <button
+              onClick={() => setIsEditorOpen(false)}
+              className="text-[#888884] hover:text-[#f0ede6] transition-colors p-1"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 select-none font-sans text-xs">
+            {/* Column Spacing (Only visible on desktop/large screens) */}
+            {isLargeScreen && (
+              <>
+                <div>
+                  <div className="flex justify-between text-[#888884] mb-1">
+                    <span>Text Column Width</span>
+                    <span className="font-mono text-[#e07040]">{settings.textWidth}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="30"
+                    max="70"
+                    value={settings.textWidth}
+                    onChange={(e) => updateSetting('textWidth', Number(e.target.value))}
+                    className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-[#888884] mb-1">
+                    <span>Layout Gap</span>
+                    <span className="font-mono text-[#e07040]">{settings.gap}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="120"
+                    step="4"
+                    value={settings.gap}
+                    onChange={(e) => updateSetting('gap', Number(e.target.value))}
+                    className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Text Scale */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Text Scale</span>
+                <span className="font-mono text-[#e07040]">{settings.textScale.toFixed(2)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.7"
+                max="1.4"
+                step="0.05"
+                value={settings.textScale}
+                onChange={(e) => updateSetting('textScale', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            {/* Map Scale */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Map Scale</span>
+                <span className="font-mono text-[#e07040]">{settings.mapScale.toFixed(2)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.7"
+                max="1.4"
+                step="0.05"
+                value={settings.mapScale}
+                onChange={(e) => updateSetting('mapScale', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            {/* Text Offsets */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Text Translation X</span>
+                <span className="font-mono text-[#e07040]">{settings.textX}px</span>
+              </div>
+              <input
+                type="range"
+                min="-100"
+                max="100"
+                step="5"
+                value={settings.textX}
+                onChange={(e) => updateSetting('textX', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Text Translation Y</span>
+                <span className="font-mono text-[#e07040]">{settings.textY}px</span>
+              </div>
+              <input
+                type="range"
+                min="-100"
+                max="100"
+                step="5"
+                value={settings.textY}
+                onChange={(e) => updateSetting('textY', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            {/* Map Offsets */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Map Translation X</span>
+                <span className="font-mono text-[#e07040]">{settings.mapX}px</span>
+              </div>
+              <input
+                type="range"
+                min="-100"
+                max="100"
+                step="5"
+                value={settings.mapX}
+                onChange={(e) => updateSetting('mapX', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Map Translation Y</span>
+                <span className="font-mono text-[#e07040]">{settings.mapY}px</span>
+              </div>
+              <input
+                type="range"
+                min="-100"
+                max="100"
+                step="5"
+                value={settings.mapY}
+                onChange={(e) => updateSetting('mapY', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-5 pt-3 border-t border-[#3a3a38]">
+            <button
+              onClick={resetSettings}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#2a2a28] hover:bg-[#3a3a38] text-[#f0ede6] rounded-xl font-medium text-xs transition-colors duration-200"
+            >
+              <RotateCcw size={12} />
+              <span>Reset</span>
+            </button>
+            <button
+              onClick={() => setIsEditorOpen(false)}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#e07040] hover:bg-[#c8b89a] hover:text-[#0d0d0c] text-[#0d0d0c] rounded-xl font-medium text-xs transition-colors duration-200"
+            >
+              <span>Save &amp; Close</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[#3a3a38] hidden md:block cursor-pointer"
+        onClick={() => scrollTo('#about')}
+      >
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+          className="flex flex-col items-center gap-1"
+        >
+          <span className="text-[10px] font-mono tracking-widest uppercase mb-1">Scroll Down</span>
+          <ChevronDown size={20} />
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}

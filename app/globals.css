@@ -1,26 +1,742 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surface colors */
+  --color-surface-primary: #0d0d0c;
+  --color-surface-secondary: #1a1a18;
+  --color-surface-tertiary: #2a2a28;
+  
+  /* Text colors */
+  --color-text-primary: #f0ede6;
+  --color-text-secondary: #888884;
+  
+  /* Accent colors */
+  --color-accent-orange: #e07040;
+  --color-accent-cream: #c8b89a;
+  --color-border: #3a3a38;
+  
+  /* Background and foreground aliases */
+  --background: #0d0d0c;
+  --foreground: #f0ede6;
+  --color-background: #0d0d0c;
+  --color-foreground: #f0ede6;
+
+  /* Border radius scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* Section spacing */
+  --spacing-section: 120px;
+  --spacing-section-mobile: 60px;
+
+  /* Font mapping */
+  --font-display: var(--font-serif);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ==============================
+   Base styles
+============================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.75;
+  overflow-x: hidden;
+  /* Performance: use hardware acceleration for animations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ==============================
+   Typography scale
+============================== */
+.text-hero {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(40px, 6vw, 80px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.text-section-heading {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(28px, 3.5vw, 48px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.text-body {
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.75;
+}
+
+.text-code {
+  font-family: var(--font-mono), "JetBrains Mono", "Courier New", monospace;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ==============================
+   Animations
+============================== */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.25s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+/* ==============================
+   Focus indicators (a11y)
+============================== */
+:focus-visible {
+  outline: 2px solid #e07040;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ==============================
+   Selection styling
+============================== */
+::selection {
+  background-color: rgba(224, 112, 64, 0.3);
+  color: #f0ede6;
+}
+
+/* ==============================
+   Scrollbar styling
+============================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d0d0c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a38;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888884;
+}
+
+/* ==============================
+   Reduced motion support
+============================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==============================
+   Skills Section (Canvas Physics Graph)
+============================= */
+.skills-section {
+  position: relative;
+  width: 100%;
+  background: #1a1a18;
+  padding: 120px 0;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .skills-section {
+    padding: 60px 0;
+  }
+}
+
+.skills-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-size: 40px 40px;
+  background-image: radial-gradient(circle, rgba(224, 112, 64, 0.03) 1px, transparent 1px);
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.skills-header {
+  max-width: 1200px;
+  margin: 0 auto 48px auto;
+  padding: 0 80px;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .skills-header {
+    padding: 0 24px;
+    margin-bottom: 32px;
+  }
+}
+
+.skills-eyebrow {
+  color: #e07040;
+  font-family: var(--font-mono), monospace;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.skills-title {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(28px, 3.5vw, 48px);
+  color: #f0ede6;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.skills-desc {
+  color: #888884;
+  max-width: 42rem;
+  font-size: 16px;
+  line-height: 1.625;
+}
+
+.skills-canvas-wrap {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 80px;
+  height: 560px;
+  overflow: visible;
+}
+
+@media (max-width: 1024px) {
+  .skills-canvas-wrap {
+    height: 480px;
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-canvas-wrap {
+    height: 400px;
+    padding: 0 24px;
+  }
+}
+
+.skills-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: transparent;
+  cursor: grab;
+}
+
+.skills-canvas:active {
+  cursor: grabbing;
+}
+
+.skills-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(22, 22, 20, 0.95);
+  border: 1px solid #3a3a38;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  transform: translate(-50%, -100%);
+  z-index: 30;
+}
+
+.skills-tooltip-name {
+  color: #f0ede6;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.skills-tooltip-cat {
+  color: #888884;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.skills-legend {
+  max-width: 1200px;
+  margin: 40px auto 0 auto;
+  padding: 0 80px;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+  list-style: none;
+}
+
+@media (max-width: 768px) {
+  .skills-legend {
+    padding: 0 24px;
+    gap: 16px;
+  }
+}
+
+.skills-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #888884;
+  font-size: 14px;
+  font-family: var(--font-sans), sans-serif;
+}
+
+.skills-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* ==============================
+   Experience Section Styles
+============================= */
+.exp-section {
+  position: relative;
+  background: #0d0d0c;
+  padding: 80px 48px 96px;
+  overflow: hidden;
+}
+
+/* Subtle dot-grid atmosphere — same token as SkillsSection */
+.exp-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+.exp-header {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 56px;
+}
+
+.exp-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e07040;
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+
+.exp-title {
+  font-family: var(--font-display, 'DM Serif Display', Georgia, serif);
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 400;
+  color: #f0ede6;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  margin: 0 0 10px;
+}
+
+/* Italic word inside the heading — same style as hero */
+.exp-title em {
+  font-style: italic;
+  color: #c8b89a;
+}
+
+.exp-count {
+  font-size: 11px;
+  color: #3a3a38;
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+/* ── Timeline list ─────────────────────────────────────────────────────────── */
+.exp-list {
+  position: relative;
+  z-index: 2;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Single experience item ────────────────────────────────────────────────── */
+.exp-item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 0;
+  position: relative;
+  cursor: default;
+}
+
+/* Connector line between items */
+.exp-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 35px;
+  top: 100%;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, #2a2a28, transparent);
+  pointer-events: none;
+}
+
+/* ── Index column ──────────────────────────────────────────────────────────── */
+.exp-index-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 28px;
+  position: relative;
+}
+
+.exp-num {
+  font-family: var(--font-display, 'DM Serif Display', Georgia, serif);
+  font-size: 13px;
+  color: #2a2a28;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.exp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a2a28;
+  margin-top: 8px;
+  flex-shrink: 0;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.exp-vline {
+  width: 1px;
+  flex: 1;
+  background: #1a1a18;
+  margin-top: 8px;
+}
+
+/* ── Card ──────────────────────────────────────────────────────────────────── */
+.exp-card {
+  background: #111110;
+  border: 0.5px solid #222220;
+  border-radius: 16px;
+  padding: 28px 32px 32px;
+  margin: 0 0 40px 0;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+/* Top shimmer line — animates in on hover */
+.exp-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: transparent;
+  transition: background 0.4s ease;
+}
+
+/* ── Hover states ──────────────────────────────────────────────────────────── */
+.exp-item:hover .exp-card {
+  border-color: #3a3a38;
+  background: #131311;
+}
+
+.exp-item:hover .exp-card::before {
+  background: linear-gradient(to right, transparent, rgba(224, 112, 64, 0.45), transparent);
+}
+
+.exp-item:hover .exp-dot {
+  background: #e07040;
+  transform: scale(1.4);
+}
+
+.exp-item:hover .exp-num {
+  color: #e07040;
+}
+
+.exp-item:hover .exp-bullet-tip {
+  background: #e07040;
+  border-color: #e07040;
+}
+
+.exp-item:hover .exp-bullet-text {
+  color: #888884;
+}
+
+.exp-item:hover .exp-tag {
+  color: #666660;
+  border-color: #333330;
+}
+
+/* ── Card top row ──────────────────────────────────────────────────────────── */
+.exp-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.exp-role {
+  font-family: var(--font-display, 'DM Serif Display', Georgia, serif);
+  font-size: 22px;
+  font-weight: 400;
+  color: #f0ede6;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+/* Date pill */
+.exp-date-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #1a1a18;
+  border: 0.5px solid #2a2a28;
+  border-radius: 20px;
+  padding: 5px 13px;
+  flex-shrink: 0;
+}
+
+.exp-date-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e07040;
+  flex-shrink: 0;
+}
+
+.exp-date {
+  font-size: 11px;
+  color: #666660;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* ── Company row ───────────────────────────────────────────────────────────── */
+.exp-company-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.exp-company {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e07040;
+  letter-spacing: 0.02em;
+}
+
+.exp-company-sep {
+  width: 16px;
+  height: 0.5px;
+  background: #2a2a28;
+  flex-shrink: 0;
+}
+
+.exp-type {
+  font-size: 10.5px;
+  color: #3a3a38;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Divider ───────────────────────────────────────────────────────────────── */
+.exp-divider {
+  height: 0.5px;
+  background: #1e1e1c;
+  margin-bottom: 20px;
+}
+
+/* ── Summary ───────────────────────────────────────────────────────────────── */
+.exp-summary {
+  font-size: 13.5px;
+  color: #666660;
+  line-height: 1.75;
+  margin: 0 0 22px;
+}
+
+/* ── Bullet list ───────────────────────────────────────────────────────────── */
+.exp-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exp-bullet {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.exp-bullet-marker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding-top: 6px;
+}
+
+.exp-bullet-line {
+  width: 14px;
+  height: 0.5px;
+  background: #333330;
+  flex-shrink: 0;
+}
+
+.exp-bullet-tip {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  border: 0.5px solid #444440;
+  flex-shrink: 0;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.exp-bullet-text {
+  font-size: 13px;
+  color: #555552;
+  line-height: 1.65;
+  transition: color 0.3s ease;
+}
+
+/* ── Tech tags ─────────────────────────────────────────────────────────────── */
+.exp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 0.5px solid #1a1a18;
+}
+
+.exp-tag {
+  font-size: 10.5px;
+  color: #444440;
+  border: 0.5px solid #222220;
+  border-radius: 20px;
+  padding: 4px 11px;
+  letter-spacing: 0.04em;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .exp-section {
+    padding: 64px 24px 80px;
+  }
+
+  .exp-item {
+    grid-template-columns: 52px 1fr;
+  }
+
+  .exp-item:not(:last-child)::after {
+    left: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .exp-section {
+    padding: 52px 16px 64px;
+  }
+
+  .exp-item {
+    grid-template-columns: 40px 1fr;
+  }
+
+  .exp-item:not(:last-child)::after {
+    left: 19px;
+  }
+
+  .exp-card {
+    padding: 20px 18px 24px;
+    border-radius: 12px;
+  }
+
+  .exp-card-top {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .exp-role {
+    font-size: 19px;
+  }
+}
+
