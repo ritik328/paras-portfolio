@@ -93,69 +93,140 @@ svg circle, svg path, svg polygon, svg rect, svg line, svg text {
               opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-theme='light'] {
-  /* Surface Overrides */
-  .bg-\[\#0d0d0c\], .bg-surface-primary {
-    background-color: var(--color-surface-primary) !important;
-  }
-  .bg-\[\#1a1a18\], .bg-surface-secondary {
-    background-color: var(--color-surface-secondary) !important;
-  }
-  .bg-\[\#2a2a28\], .bg-surface-tertiary {
-    background-color: var(--color-surface-tertiary) !important;
-  }
-  .bg-\[\#161614\], .bg-surface-secondary {
-    background-color: var(--color-surface-secondary) !important;
-  }
-  
-  /* Text Overrides */
-  .text-\[\#f0ede6\], .text-text-primary, .text-foreground {
-    color: var(--color-text-primary) !important;
-  }
-  .text-\[\#888884\], .text-text-secondary {
-    color: var(--color-text-secondary) !important;
-  }
-  .text-\[\#c8b89a\], .text-accent-cream {
-    color: var(--color-accent-cream) !important;
-  }
-  .text-\[\#e07040\], .text-accent-orange {
-    color: var(--color-accent-orange) !important;
-  }
-  
-  /* Border Overrides */
-  .border-\[\#3a3a38\], .border-border {
-    border-color: var(--color-border) !important;
-  }
-  .border-\[\#e07040\] {
-    border-color: var(--color-accent-orange) !important;
-  }
-  
-  /* Hover Overrides */
-  .hover\:border-\[\#e07040\]:hover {
-    border-color: var(--color-accent-orange) !important;
-  }
-  .hover\:text-\[\#e07040\]:hover {
-    color: var(--color-accent-orange) !important;
-  }
-  .hover\:text-\[\#f0ede6\]:hover {
-    color: var(--color-text-primary) !important;
-  }
-  .hover\:bg-\[\#3a3a38\]:hover {
-    background-color: var(--color-surface-tertiary) !important;
-  }
-  .hover\:bg-\[\#2a2a28\]:hover {
-    background-color: var(--color-surface-tertiary) !important;
-  }
-  
-  /* Grid patterns and atmosphere glows */
-  .skills-bg-grid {
-    background-image: radial-gradient(circle, rgba(217, 88, 41, 0.05) 1px, transparent 1px) !important;
-  }
-  
-  ::selection {
-    background-color: rgba(217, 88, 41, 0.2) !important;
-    color: var(--color-text-primary) !important;
-  }
+/* Surface Overrides */
+[data-theme='light'] .bg-\[\#0d0d0c\],
+[data-theme='light'] .bg-surface-primary {
+  background-color: var(--color-surface-primary) !important;
+}
+[data-theme='light'] .bg-\[\#1a1a18\],
+[data-theme='light'] .bg-surface-secondary {
+  background-color: var(--color-surface-secondary) !important;
+}
+[data-theme='light'] .bg-\[\#2a2a28\],
+[data-theme='light'] .bg-surface-tertiary {
+  background-color: var(--color-surface-tertiary) !important;
+}
+[data-theme='light'] .bg-\[\#161614\] {
+  background-color: var(--color-surface-secondary) !important;
+}
+
+/* Text Overrides */
+[data-theme='light'] .text-\[\#f0ede6\],
+[data-theme='light'] .text-text-primary,
+[data-theme='light'] .text-foreground {
+  color: var(--color-text-primary) !important;
+}
+[data-theme='light'] .text-\[\#888884\],
+[data-theme='light'] .text-text-secondary {
+  color: var(--color-text-secondary) !important;
+}
+[data-theme='light'] .text-\[\#c8b89a\],
+[data-theme='light'] .text-accent-cream {
+  color: var(--color-accent-cream) !important;
+}
+[data-theme='light'] .text-\[\#e07040\],
+[data-theme='light'] .text-accent-orange {
+  color: var(--color-accent-orange) !important;
+}
+
+/* Border Overrides */
+[data-theme='light'] .border-\[\#3a3a38\],
+[data-theme='light'] .border-border {
+  border-color: var(--color-border) !important;
+}
+[data-theme='light'] .border-\[\#e07040\] {
+  border-color: var(--color-accent-orange) !important;
+}
+
+/* Hover Overrides */
+[data-theme='light'] .hover\:border-\[\#e07040\]:hover {
+  border-color: var(--color-accent-orange) !important;
+}
+[data-theme='light'] .hover\:text-\[\#e07040\]:hover {
+  color: var(--color-accent-orange) !important;
+}
+[data-theme='light'] .hover\:text-\[\#f0ede6\]:hover {
+  color: var(--color-text-primary) !important;
+}
+[data-theme='light'] .hover\:bg-\[\#3a3a38\]:hover {
+  background-color: var(--color-surface-tertiary) !important;
+}
+[data-theme='light'] .hover\:bg-\[\#2a2a28\]:hover {
+  background-color: var(--color-surface-tertiary) !important;
+}
+
+/* Grid patterns and atmosphere glows */
+[data-theme='light'] .skills-bg-grid {
+  background-image: radial-gradient(circle, rgba(217, 88, 41, 0.05) 1px, transparent 1px) !important;
+}
+
+[data-theme='light'] ::selection {
+  background-color: rgba(217, 88, 41, 0.2) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Skills Section Light Mode overrides */
+[data-theme='light'] .skills-title {
+  color: var(--color-text-primary) !important;
+}
+[data-theme='light'] .skills-desc {
+  color: var(--color-text-secondary) !important;
+}
+[data-theme='light'] .skills-tooltip {
+  background-color: rgba(243, 241, 235, 0.95) !important;
+  border-color: var(--color-border) !important;
+}
+[data-theme='light'] .skills-tooltip-name {
+  color: var(--color-text-primary) !important;
+}
+[data-theme='light'] .skills-tooltip-cat {
+  color: var(--color-text-secondary) !important;
+}
+[data-theme='light'] .skills-legend-item {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Experience Section Light Mode overrides */
+[data-theme='light'] .exp-card {
+  background-color: var(--color-surface-secondary) !important;
+  border-color: var(--color-border) !important;
+}
+[data-theme='light'] .exp-item:hover .exp-card {
+  background-color: var(--color-surface-tertiary) !important;
+  border-color: var(--color-accent-orange) !important;
+}
+[data-theme='light'] .exp-role {
+  color: var(--color-text-primary) !important;
+}
+[data-theme='light'] .exp-date-badge {
+  background-color: var(--color-surface-tertiary) !important;
+  border-color: var(--color-border) !important;
+}
+[data-theme='light'] .exp-date {
+  color: var(--color-text-secondary) !important;
+}
+[data-theme='light'] .exp-summary {
+  color: var(--color-text-secondary) !important;
+}
+[data-theme='light'] .exp-bullet-text {
+  color: var(--color-text-primary) !important;
+}
+[data-theme='light'] .exp-tag {
+  color: var(--color-text-secondary) !important;
+  border-color: var(--color-border) !important;
+  background-color: var(--color-surface-primary) !important;
+}
+[data-theme='light'] .exp-divider {
+  background-color: var(--color-border) !important;
+}
+[data-theme='light'] .exp-vline {
+  background-color: var(--color-border) !important;
+}
+[data-theme='light'] .exp-dot {
+  background-color: var(--color-border) !important;
+}
+[data-theme='light'] .exp-num {
+  color: var(--color-text-secondary) !important;
 }
 
 /* ==============================
@@ -281,16 +352,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d0d0c;
+  background: var(--color-surface-primary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3a3a38;
+  background: var(--color-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #888884;
+  background: var(--color-text-secondary);
 }
 
 /* ==============================
@@ -316,7 +387,7 @@ body {
 .skills-section {
   position: relative;
   width: 100%;
-  background: #1a1a18;
+  background: var(--color-surface-secondary);
   padding: 120px 0;
   overflow: hidden;
 }
@@ -481,7 +552,7 @@ body {
 ============================= */
 .exp-section {
   position: relative;
-  background: #0d0d0c;
+  background: var(--color-surface-primary);
   padding: 80px 48px 96px;
   overflow: hidden;
 }

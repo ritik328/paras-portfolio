@@ -543,7 +543,7 @@ export function InteractiveMap() {
               ly = node.y - 24;
               break;
             case 'bottom':
-              ly = node.y + (node.id === 'center' ? 28 : 24);
+              ly = node.y + (node.id === 'center' ? 32 : node.shape === 'hexagon' ? 30 : 22);
               break;
             case 'left':
               lx = node.x - 22;

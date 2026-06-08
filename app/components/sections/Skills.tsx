@@ -548,17 +548,17 @@ export function Skills() {
 
                 switch (node.labelPos) {
                   case 'top':
-                    ly = node.y - 20;
+                    ly = node.y - 24;
                     break;
                   case 'bottom':
-                    ly = node.y + (node.id === 'center' ? 28 : 20);
+                    ly = node.y + (node.id === 'center' ? 32 : node.shape === 'hexagon' ? 30 : 22);
                     break;
                   case 'left':
-                    lx = node.x - 18;
+                    lx = node.x - 22;
                     anchor = 'end';
                     break;
                   case 'right':
-                    lx = node.x + 18;
+                    lx = node.x + 22;
                     anchor = 'start';
                     break;
                 }
