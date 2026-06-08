@@ -78,10 +78,10 @@ export function Navbar() {
         <div className="max-w-[1200px] mx-auto px-6 md:px-20 h-20 flex justify-between items-center">
           <button
             onClick={handleBrandClick}
-            className="pointer-events-auto font-serif text-xl text-[#f0ede6] hover:text-[#e07040] transition-colors duration-200 select-none cursor-pointer"
+            className="pointer-events-auto font-serif text-lg tracking-widest text-[#f0ede6] hover:text-[#e07040] transition-all duration-300 select-none cursor-pointer border border-[#3a3a38]/40 px-3.5 py-1 bg-[#1a1a18]/65 rounded-xl backdrop-blur-md shadow-sm hover:border-[#e07040]/30 hover:shadow-[#e07040]/5"
             aria-label="Scroll to top"
           >
-            Paras Negi
+            PN
           </button>
         </div>
       </header>
