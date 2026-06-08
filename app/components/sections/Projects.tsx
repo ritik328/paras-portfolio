@@ -5,7 +5,7 @@ import { ExternalLink } from 'lucide-react';
 import { projects } from '@/app/lib/data/projects';
 import type { Project } from '@/app/lib/data/types';
 
-// SVG GitHub icon (not in newer lucide-react)
+// SVG GitHub icon (matching the rest of the project)
 function GithubIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -14,53 +14,60 @@ function GithubIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-function ProjectCard({ project, featured = false }: { project: Project; featured?: boolean }) {
+function ProjectCard({
+  project,
+  index,
+  featured = false,
+}: {
+  project: Project;
+  index: number;
+  featured?: boolean;
+}) {
+  const formattedIndex = String(index + 1).padStart(2, '0');
+
   return (
-    <div
-      className={`project-card group relative bg-[#1a1a18] rounded-xl p-6 border border-[#3a3a38] 
-                  hover:border-[#e07040] transition-all duration-300 hover:-translate-y-1 ${
-                    featured ? 'md:p-8' : ''
-                  }`}
-    >
-      {featured && (
-        <span className="inline-block px-3 py-1 bg-[#e07040]/10 text-[#e07040] text-xs font-medium rounded-full border border-[#e07040]/30 mb-4">
-          Featured Project
-        </span>
+    <div className={`proj-card ${featured ? 'featured' : ''}`}>
+      {/* Card Header area */}
+      {featured ? (
+        <div className="proj-card-head">
+          <span className="proj-card-badge">
+            <span className="proj-card-badge-dot" />
+            Featured Project
+          </span>
+          <span className="proj-card-index">{formattedIndex}</span>
+        </div>
+      ) : (
+        <div className="mb-4">
+          <span className="proj-card-index">{formattedIndex}</span>
+        </div>
       )}
 
-      <h3
-        className={`font-sans font-bold text-[#f0ede6] mb-3 group-hover:text-[#e07040] transition-colors ${
-          featured ? 'text-2xl' : 'text-xl'
-        }`}
-      >
-        {project.name}
-      </h3>
+      {/* Project Title */}
+      <h3 className="proj-card-title">{project.name}</h3>
 
-      <p className="text-[#888884] mb-4 leading-relaxed text-sm">{project.description}</p>
+      {/* Project Description */}
+      <p className="proj-card-desc">{project.description}</p>
 
-      {/* Tech tags */}
-      <div className="flex flex-wrap gap-2 mb-5">
+      {/* Tech Tags */}
+      <div className="proj-card-tags">
         {project.tags.map((tag) => (
-          <span
-            key={tag}
-            className="px-3 py-1 text-xs bg-[#2a2a28] text-[#888884] rounded-full border border-[#3a3a38]"
-          >
+          <span key={tag} className="proj-card-tag">
             {tag}
           </span>
         ))}
       </div>
 
-      {/* Links */}
-      <div className="flex gap-4">
+      {/* Project Links */}
+      <div className="proj-card-links">
         {project.githubUrl && (
           <a
             href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-[#888884] hover:text-[#e07040] transition-colors duration-200"
-            aria-label={`View ${project.name} on GitHub`}
+            className="proj-card-link"
+            aria-label={`View ${project.name} code on GitHub`}
           >
-            <GithubIcon size={16} />
+            <GithubIcon size={14} />
             <span>Code</span>
           </a>
         )}
@@ -69,27 +76,20 @@ function ProjectCard({ project, featured = false }: { project: Project; featured
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-[#888884] hover:text-[#e07040] transition-colors duration-200"
+            className="proj-card-link"
             aria-label={`View ${project.name} live demo`}
           >
-            <ExternalLink size={16} />
+            <ExternalLink size={14} />
             <span>Live Demo</span>
           </a>
         )}
       </div>
-
-      {/* Hover glow */}
-      <div
-        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ boxShadow: '0 0 30px rgba(224, 112, 64, 0.15)' }}
-        aria-hidden="true"
-      />
     </div>
   );
 }
 
 /**
- * Projects section with masonry card grid layout and GSAP stagger animations.
+ * Projects section displaying featured and regular projects.
  */
 export function Projects() {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -104,7 +104,7 @@ export function Projects() {
         if (!gridRef.current) return;
 
         gsapModule.default.fromTo(
-          '.project-card',
+          '.proj-card',
           { opacity: 0, y: 30 },
           {
             opacity: 1,
@@ -114,45 +114,55 @@ export function Projects() {
             ease: 'power2.out',
             scrollTrigger: {
               trigger: gridRef.current,
-              start: 'top 70%',
+              start: 'top 75%',
             },
           }
         );
       } catch (err) {
-        console.error('GSAP init error:', err);
+        console.error('GSAP projects init error:', err);
       }
     };
 
     initAnimations();
   }, []);
 
+  // Filter projects
   const featuredProjects = projects.filter((p) => p.featured);
   const regularProjects = projects.filter((p) => !p.featured);
 
   return (
     <section
       id="projects"
-      className="py-[120px] max-sm:py-[60px] bg-[#0d0d0c]"
+      className="proj-section"
       aria-labelledby="projects-heading"
     >
-      <div className="max-w-[1200px] mx-auto px-20 max-md:px-6">
-        <h2
-          id="projects-heading"
-          className="text-section-heading text-[#f0ede6] mb-16"
-        >
-          Projects
-        </h2>
+      {/* Blueprint grid background */}
+      <div className="proj-bg" />
 
-        <div ref={gridRef} className="space-y-6">
+      <div className="max-w-[1200px] mx-auto px-20 max-md:px-6">
+        {/* Section Header */}
+        <div className="proj-header">
+          <p className="proj-eyebrow">Selected Work</p>
+          <h2 id="projects-heading" className="proj-title">
+            Built <em>Projects</em>
+          </h2>
+        </div>
+
+        {/* Projects Layout Grid */}
+        <div ref={gridRef} className="proj-grid">
           {/* Featured projects - full width */}
-          {featuredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} featured />
+          {featuredProjects.map((project, idx) => (
+            <ProjectCard key={project.id} project={project} index={idx} featured />
           ))}
 
           {/* Regular projects - 2 column grid */}
           <div className="grid md:grid-cols-2 gap-6">
-            {regularProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+            {regularProjects.map((project, idx) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={featuredProjects.length + idx}
+              />
             ))}
           </div>
         </div>
