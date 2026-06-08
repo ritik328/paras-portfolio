@@ -567,16 +567,6 @@ export function Skills() {
                     onMouseLeave={() => handleNodeHover(null)}
                     className="group"
                   >
-                    {/* Invisible pointer hit area */}
-                    <circle
-                      cx={node.x}
-                      cy={node.y}
-                      r={20}
-                      fill="transparent"
-                      className="cursor-pointer"
-                      onClick={node.id === 'center' ? handleCenterNodeClick : undefined}
-                    />
-
                     {/* Node Shape */}
                     {renderNodeShape(node)}
 
@@ -636,6 +626,16 @@ export function Skills() {
                         </text>
                       )}
                     </g>
+
+                    {/* Invisible pointer hit area (rendered last so it sits on top and captures clicks/hovers) */}
+                    <circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={20}
+                      fill="transparent"
+                      className="cursor-pointer"
+                      onClick={node.id === 'center' ? handleCenterNodeClick : undefined}
+                    />
                   </g>
                 );
               })}
