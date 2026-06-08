@@ -46,28 +46,7 @@ export function Hero() {
   const clickCountRef = useRef<number>(0);
 
   // Image hover state
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isTitleHovered, setIsTitleHovered] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(0);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setWindowWidth(window.innerWidth);
-      const handleResize = () => setWindowWidth(window.innerWidth);
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setMousePos({
-      x: e.clientX,
-      y: e.clientY,
-    });
-  };
-
-  const isOverflowRight = mousePos.x + 220 > windowWidth;
-  const leftPos = isOverflowRight ? mousePos.x - 212 : mousePos.x + 20;
 
   // Responsive layout check
   useEffect(() => {
@@ -182,19 +161,49 @@ export function Hero() {
             </span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-            className="text-hero text-text-primary mb-4 tracking-tight cursor-pointer select-none hover:text-accent-orange transition-colors duration-300"
-            onClick={handleTitleClick}
-            onMouseEnter={() => setIsTitleHovered(true)}
-            onMouseLeave={() => setIsTitleHovered(false)}
-            onMouseMove={handleMouseMove}
-            title="Triple click to open layout editor"
-          >
-            Paras Negi
-          </motion.h1>
+          <div className="relative inline-block">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
+              className="text-hero text-text-primary mb-4 tracking-tight cursor-pointer select-none hover:text-accent-orange transition-colors duration-300 relative z-10"
+              onClick={handleTitleClick}
+              onMouseEnter={() => setIsTitleHovered(true)}
+              onMouseLeave={() => setIsTitleHovered(false)}
+              title="Triple click to open layout editor"
+            >
+              Paras Negi
+            </motion.h1>
+
+            <AnimatePresence>
+              {isTitleHovered && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 15, x: '-50%' }}
+                  animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
+                  exit={{ opacity: 0, scale: 0.8, y: 15, x: '-50%' }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  style={{
+                    position: 'absolute',
+                    bottom: '100%',
+                    left: '50%',
+                    transformOrigin: 'bottom center',
+                    zIndex: 50,
+                  }}
+                  className="w-48 h-64 mb-4 rounded-2xl border-2 border-accent-orange overflow-hidden bg-surface-secondary shadow-2xl shadow-accent-orange/30 pointer-events-none"
+                >
+                  {/* Grid Lines Pattern */}
+                  <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none z-10" />
+                  <img
+                    src="/paras.jpg"
+                    alt="Paras Negi"
+                    className="w-full h-full object-cover filter contrast-[1.05] brightness-[0.95]"
+                  />
+                  {/* Vignette Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -478,34 +487,6 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      <AnimatePresence>
-        {isTitleHovered && (
-          <motion.div
-            style={{
-              position: 'fixed',
-              left: leftPos,
-              top: mousePos.y - 120,
-              pointerEvents: 'none',
-              zIndex: 9999,
-            }}
-            initial={{ opacity: 0, scale: 0.8, y: 10, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, y: 0, rotate: 2 }}
-            exit={{ opacity: 0, scale: 0.8, y: -10, rotate: -5 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-            className="w-48 h-64 rounded-2xl border-2 border-accent-orange overflow-hidden bg-surface-secondary shadow-2xl shadow-accent-orange/30"
-          >
-            {/* Grid Lines Pattern */}
-            <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none z-10" />
-            <img
-              src="/paras.jpg"
-              alt="Paras Negi"
-              className="w-full h-full object-cover filter contrast-[1.05] brightness-[0.95]"
-            />
-            {/* Vignette Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
