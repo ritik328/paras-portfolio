@@ -57,7 +57,7 @@ export function About() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
           id="about-heading"
-          className="text-section-heading text-[#f0ede6] mb-16"
+          className="text-section-heading text-text-primary mb-16"
         >
           About Me
         </motion.h2>
@@ -69,18 +69,18 @@ export function About() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <p className="font-serif text-lg md:text-xl text-[#f0ede6] leading-relaxed mb-6">
+            <p className="font-serif text-lg md:text-xl text-text-primary leading-relaxed mb-6">
               I&apos;m a passionate Full-Stack Developer currently pursuing B.Tech in Computer
               Science at Amritsar Group of Colleges. I love building web applications that solve
               real-world problems with clean code and intuitive design.
             </p>
-            <p className="font-serif text-lg text-[#888884] leading-relaxed mb-6">
+            <p className="font-serif text-lg text-text-secondary leading-relaxed mb-6">
               My journey in tech spans across the full stack — from crafting pixel-perfect
               frontends with React.js to building robust backends with Django and Node.js.
               I&apos;ve also explored the world of AI tools and how they can supercharge
               developer productivity.
             </p>
-            <p className="font-serif text-lg text-[#888884] leading-relaxed">
+            <p className="font-serif text-lg text-text-secondary leading-relaxed">
               When I&apos;m not coding, I&apos;m exploring new technologies, contributing to
               open-source projects, and constantly learning to stay ahead in the ever-evolving
               tech landscape.
@@ -91,7 +91,7 @@ export function About() {
               initial={{ scaleX: 0 }}
               animate={isInView ? { scaleX: 1 } : {}}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="mt-8 h-px bg-gradient-to-r from-[#e07040] to-transparent origin-left"
+              className="mt-8 h-px bg-gradient-to-r from-accent-orange to-transparent origin-left"
             />
           </motion.div>
 
@@ -105,7 +105,7 @@ export function About() {
                 transition={{ duration: 0.6, delay: 0.3 + index * 0.15 }}
                 className="group"
               >
-                <div className="text-5xl font-serif text-[#e07040] mb-2 tabular-nums">
+                <div className="text-5xl font-serif text-accent-orange mb-2 tabular-nums">
                   {stat.numericValue !== undefined ? (
                     <AnimatedCounter
                       value={stat.numericValue}
@@ -115,10 +115,10 @@ export function About() {
                     stat.value
                   )}
                 </div>
-                <div className="text-[#888884] font-sans text-sm uppercase tracking-wider">
+                <div className="text-text-secondary font-sans text-sm uppercase tracking-wider">
                   {stat.label}
                 </div>
-                <div className="mt-3 h-px bg-[#3a3a38] group-hover:bg-[#e07040] transition-colors duration-300" />
+                <div className="mt-3 h-px bg-border group-hover:bg-accent-orange transition-colors duration-300" />
               </motion.div>
             ))}
 
@@ -128,9 +128,9 @@ export function About() {
               animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.7 }}
             >
-              <div className="text-sm text-[#888884] uppercase tracking-wider mb-1">Currently At</div>
-              <div className="text-[#f0ede6] font-medium">Amritsar Group of Colleges</div>
-              <div className="text-[#888884] text-sm">B.Tech CSE · 2022 – 2026</div>
+              <div className="text-sm text-text-secondary uppercase tracking-wider mb-1">Currently At</div>
+              <div className="text-text-primary font-medium">Amritsar Group of Colleges</div>
+              <div className="text-text-secondary text-sm">B.Tech CSE · 2022 – 2026</div>
             </motion.div>
           </div>
         </div>
