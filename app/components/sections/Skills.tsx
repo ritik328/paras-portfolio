@@ -310,31 +310,42 @@ export function Skills() {
                 isActive ? 'opacity-100' : 'opacity-0'
               }`}
             />
-            {/* Cog teeth */}
-            {[...Array(8)].map((_, i) => {
-              const angle = (i * Math.PI) / 4;
-              const x1 = Math.cos(angle) * 10;
-              const y1 = Math.sin(angle) * 10;
-              const x2 = Math.cos(angle) * 14;
-              const y2 = Math.sin(angle) * 14;
-              return (
-                <line
-                  key={i}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  stroke="#e07040"
-                  strokeWidth={3}
-                  strokeLinecap="round"
-                  className="transition-all duration-300"
-                />
-              );
-            })}
-             <circle cx={0} cy={0} r={10} fill="#e07040" />
-             <circle cx={0} cy={0} r={4} fill="var(--background)" />
-           </g>
-         );
+            {/* Spinning container */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="rotate"
+                from="0"
+                to="360"
+                dur="25s"
+                repeatCount="indefinite"
+              />
+              {/* Cog teeth */}
+              {[...Array(8)].map((_, i) => {
+                const angle = (i * Math.PI) / 4;
+                const x1 = Math.cos(angle) * 10;
+                const y1 = Math.sin(angle) * 10;
+                const x2 = Math.cos(angle) * 14;
+                const y2 = Math.sin(angle) * 14;
+                return (
+                  <line
+                    key={i}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke="#e07040"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    className="transition-all duration-300"
+                  />
+                );
+              })}
+              <circle cx={0} cy={0} r={10} fill="#e07040" />
+              <circle cx={0} cy={0} r={4} fill="var(--background)" />
+            </g>
+          </g>
+        );
 
       case 'hexagon': {
         const hexPoints = [
