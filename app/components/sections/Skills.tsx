@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Sliders, RotateCcw, X } from 'lucide-react';
 
 interface SkillNode {
   id: string;
@@ -167,11 +168,77 @@ SKILL_NODES.forEach((node) => {
 /**
  * Skills section showing a static SVG blueprint map that mirrors the InteractiveMap style.
  */
+interface SkillsLayoutSettings {
+  mapScale: number;
+  mapX: number;
+  mapY: number;
+  canvasHeight: number;
+  headerScale: number;
+  headerX: number;
+  headerY: number;
+}
+
+const DEFAULT_SETTINGS: SkillsLayoutSettings = {
+  mapScale: 1.0,
+  mapX: 0,
+  mapY: 0,
+  canvasHeight: 560,
+  headerScale: 1.0,
+  headerX: 0,
+  headerY: 0,
+};
+
 export function Skills() {
+  const [settings, setSettings] = useState<SkillsLayoutSettings>(DEFAULT_SETTINGS);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const lastClickRef = useRef<number>(0);
   const clickCountRef = useRef<number>(0);
+  const lastCenterClickRef = useRef<number>(0);
+  const centerClickCountRef = useRef<number>(0);
+
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hoveredGroupId, setHoveredGroupId] = useState<string | null>(null);
+
+  // Load settings from localStorage
+  useEffect(() => {
+    setMounted(true);
+    const saved = localStorage.getItem('skills-layout-settings');
+    if (saved) {
+      try {
+        setSettings(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse skills layout settings', e);
+      }
+    }
+  }, []);
+
+  const updateSetting = (key: keyof SkillsLayoutSettings, value: number) => {
+    const updated = { ...settings, [key]: value };
+    setSettings(updated);
+    localStorage.setItem('skills-layout-settings', JSON.stringify(updated));
+  };
+
+  const resetSettings = () => {
+    setSettings(DEFAULT_SETTINGS);
+    localStorage.setItem('skills-layout-settings', JSON.stringify(DEFAULT_SETTINGS));
+  };
+
+  const handleCenterNodeClick = () => {
+    const now = Date.now();
+    if (now - lastCenterClickRef.current < 800) {
+      centerClickCountRef.current += 1;
+    } else {
+      centerClickCountRef.current = 1;
+    }
+    lastCenterClickRef.current = now;
+
+    if (centerClickCountRef.current >= 3) {
+      setIsEditorOpen((prev) => !prev);
+      centerClickCountRef.current = 0;
+    }
+  };
 
   const handleHeadingClick = () => {
     const now = Date.now();
@@ -365,7 +432,16 @@ export function Skills() {
       <div className="skills-bg-grid" aria-hidden="true" />
 
       {/* Header */}
-      <div className="skills-header">
+      <div
+        className="skills-header"
+        style={{
+          transform: mounted
+            ? `translate(${settings.headerX}px, ${settings.headerY}px) scale(${settings.headerScale})`
+            : undefined,
+          transformOrigin: 'left center',
+          transition: 'transform 0.3s ease',
+        }}
+      >
         <p className="skills-eyebrow">Technical Proficiency</p>
         <h2
           id="skills-heading"
@@ -382,173 +458,355 @@ export function Skills() {
       </div>
 
       {/* SVG Interactive Map */}
-      <div className="skills-canvas-wrap">
-        <svg
-          viewBox="0 0 1000 600"
-          width="100%"
-          height="100%"
-          className="w-full h-full select-none"
-          aria-label="Interactive skills node map blueprint"
-          role="img"
+      <div
+        className="skills-canvas-wrap"
+        style={{
+          height: mounted ? `${settings.canvasHeight}px` : undefined,
+          transition: 'height 0.3s ease',
+        }}
+      >
+        <div
+          className="w-full h-full"
+          style={{
+            transform: mounted
+              ? `translate(${settings.mapX}px, ${settings.mapY}px) scale(${settings.mapScale})`
+              : undefined,
+            transformOrigin: 'center center',
+            transition: 'transform 0.3s ease',
+          }}
         >
-          {/* Background Grid Lines (blueprint styling) */}
-          <defs>
-            <pattern id="skills-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#222220" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#skills-grid)" opacity="0.3" />
+          <svg
+            viewBox="0 0 1000 600"
+            width="100%"
+            height="100%"
+            className="w-full h-full select-none"
+            aria-label="Interactive skills node map blueprint"
+            role="img"
+          >
+            {/* Background Grid Lines (blueprint styling) */}
+            <defs>
+              <pattern id="skills-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#222220" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#skills-grid)" opacity="0.3" />
 
-          {/* Connection lines */}
-          <g>
-            {CONNECTIONS.map((conn, idx) => {
-              const active = isConnectionActive(conn);
-              const color = active ? getActiveColor(conn) : '#3a3a38';
-              return (
-                <path
-                  key={`line-${idx}`}
-                  d={conn.path}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={active ? 2 : 1}
-                  className="transition-all duration-300 ease-out"
-                  opacity={active ? 1 : 0.6}
-                />
-              );
-            })}
-          </g>
-
-          {/* Active path glowing shadows */}
-          <g>
-            {CONNECTIONS.map((conn, idx) => {
-              const active = isConnectionActive(conn);
-              if (!active) return null;
-              const color = getActiveColor(conn);
-              return (
-                <path
-                  key={`glow-${idx}`}
-                  d={conn.path}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={6}
-                  strokeLinecap="round"
-                  opacity={0.15}
-                  className="pointer-events-none"
-                />
-              );
-            })}
-          </g>
-
-          {/* Nodes and Labels */}
-          <g>
-            {SKILL_NODES.map((node) => {
-              const isActive =
-                hoveredNodeId === node.id ||
-                (hoveredGroupId === node.group && node.id !== 'center');
-
-              // Label offsets
-              let lx = node.x;
-              let ly = node.y;
-              let anchor: 'start' | 'middle' | 'end' = 'middle';
-
-              switch (node.labelPos) {
-                case 'top':
-                  ly = node.y - 20;
-                  break;
-                case 'bottom':
-                  ly = node.y + (node.id === 'center' ? 28 : 20);
-                  break;
-                case 'left':
-                  lx = node.x - 18;
-                  anchor = 'end';
-                  break;
-                case 'right':
-                  lx = node.x + 18;
-                  anchor = 'start';
-                  break;
-              }
-
-              return (
-                <g
-                  key={node.id}
-                  onMouseEnter={() => handleNodeHover(node)}
-                  onMouseLeave={() => handleNodeHover(null)}
-                  className="group"
-                >
-                  {/* Invisible pointer hit area */}
-                  <circle
-                    cx={node.x}
-                    cy={node.y}
-                    r={20}
-                    fill="transparent"
-                    className="cursor-pointer"
+            {/* Connection lines */}
+            <g>
+              {CONNECTIONS.map((conn, idx) => {
+                const active = isConnectionActive(conn);
+                const color = active ? getActiveColor(conn) : '#3a3a38';
+                return (
+                  <path
+                    key={`line-${idx}`}
+                    d={conn.path}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth={active ? 2 : 1}
+                    className="transition-all duration-300 ease-out"
+                    opacity={active ? 1 : 0.6}
                   />
+                );
+              })}
+            </g>
 
-                  {/* Node Shape */}
-                  {renderNodeShape(node)}
+            {/* Active path glowing shadows */}
+            <g>
+              {CONNECTIONS.map((conn, idx) => {
+                const active = isConnectionActive(conn);
+                if (!active) return null;
+                const color = getActiveColor(conn);
+                return (
+                  <path
+                    key={`glow-${idx}`}
+                    d={conn.path}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth={6}
+                    strokeLinecap="round"
+                    opacity={0.15}
+                    className="pointer-events-none"
+                  />
+                );
+              })}
+            </g>
 
-                  {/* Category numbers inside hexagons */}
-                  {node.shape === 'hexagon' && node.num !== undefined && (
-                    <text
-                      x={node.x}
-                      y={node.y}
-                      textAnchor="middle"
-                      dy="0.35em"
-                      fill={isActive ? node.catColor : '#f0ede6'}
-                      fontSize={12}
-                      fontWeight="bold"
-                      className="pointer-events-none font-mono"
-                    >
-                      {node.num}
-                    </text>
-                  )}
+            {/* Nodes and Labels */}
+            <g>
+              {SKILL_NODES.map((node) => {
+                const isActive =
+                  hoveredNodeId === node.id ||
+                  (hoveredGroupId === node.group && node.id !== 'center');
 
-                  {/* Node Label Text */}
-                  <g className="cursor-pointer pointer-events-none">
-                    <text
-                      x={lx}
-                      y={ly}
-                      textAnchor={anchor}
-                      fontSize={node.id === 'center' ? 16 : node.shape === 'hexagon' ? 13 : 11}
-                      fontWeight={
-                        node.id === 'center' || node.shape === 'hexagon' || isActive
-                          ? '700'
-                          : '500'
-                      }
-                      fill={
-                        isActive
-                          ? '#f0ede6'
-                          : node.id === 'center'
-                          ? '#f0ede6'
-                          : '#888884'
-                      }
-                      fontFamily="var(--font-sans), sans-serif"
-                      className="transition-colors duration-300"
-                    >
-                      {node.label}
-                    </text>
+                // Label offsets
+                let lx = node.x;
+                let ly = node.y;
+                let anchor: 'start' | 'middle' | 'end' = 'middle';
 
-                    {/* Optional Sub-Label */}
-                    {node.subLabel && (
+                switch (node.labelPos) {
+                  case 'top':
+                    ly = node.y - 20;
+                    break;
+                  case 'bottom':
+                    ly = node.y + (node.id === 'center' ? 28 : 20);
+                    break;
+                  case 'left':
+                    lx = node.x - 18;
+                    anchor = 'end';
+                    break;
+                  case 'right':
+                    lx = node.x + 18;
+                    anchor = 'start';
+                    break;
+                }
+
+                return (
+                  <g
+                    key={node.id}
+                    onMouseEnter={() => handleNodeHover(node)}
+                    onMouseLeave={() => handleNodeHover(null)}
+                    className="group"
+                  >
+                    {/* Invisible pointer hit area */}
+                    <circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={20}
+                      fill="transparent"
+                      className="cursor-pointer"
+                      onClick={node.id === 'center' ? handleCenterNodeClick : undefined}
+                    />
+
+                    {/* Node Shape */}
+                    {renderNodeShape(node)}
+
+                    {/* Category numbers inside hexagons */}
+                    {node.shape === 'hexagon' && node.num !== undefined && (
                       <text
-                        x={lx}
-                        y={ly + 16}
-                        textAnchor={anchor}
-                        fontSize={10}
-                        fill="#888884"
-                        fontFamily="var(--font-mono), monospace"
-                        className="font-semibold tracking-wider"
+                        x={node.x}
+                        y={node.y}
+                        textAnchor="middle"
+                        dy="0.35em"
+                        fill={isActive ? node.catColor : '#f0ede6'}
+                        fontSize={12}
+                        fontWeight="bold"
+                        className="pointer-events-none font-mono"
                       >
-                        {node.subLabel}
+                        {node.num}
                       </text>
                     )}
+
+                    {/* Node Label Text */}
+                    <g className="cursor-pointer pointer-events-none">
+                      <text
+                        x={lx}
+                        y={ly}
+                        textAnchor={anchor}
+                        fontSize={node.id === 'center' ? 16 : node.shape === 'hexagon' ? 13 : 11}
+                        fontWeight={
+                          node.id === 'center' || node.shape === 'hexagon' || isActive
+                            ? '700'
+                            : '500'
+                        }
+                        fill={
+                          isActive
+                            ? '#f0ede6'
+                            : node.id === 'center'
+                            ? '#f0ede6'
+                            : '#888884'
+                        }
+                        fontFamily="var(--font-sans), sans-serif"
+                        className="transition-colors duration-300"
+                      >
+                        {node.label}
+                      </text>
+
+                      {/* Optional Sub-Label */}
+                      {node.subLabel && (
+                        <text
+                          x={lx}
+                          y={ly + 16}
+                          textAnchor={anchor}
+                          fontSize={10}
+                          fill="#888884"
+                          fontFamily="var(--font-mono), monospace"
+                          className="font-semibold tracking-wider"
+                        >
+                          {node.subLabel}
+                        </text>
+                      )}
+                    </g>
                   </g>
-                </g>
-              );
-            })}
-          </g>
-        </svg>
+                );
+              })}
+            </g>
+          </svg>
+        </div>
       </div>
+
+      {/* Floating Layout Settings Editor Panel */}
+      {isEditorOpen && (
+        <div className="fixed bottom-6 right-6 z-50 w-80 bg-[#161614]/95 backdrop-blur-md border border-[#3a3a38] rounded-2xl p-5 shadow-2xl animate-fade-in text-left">
+          <div className="flex justify-between items-center mb-4 border-b border-[#3a3a38] pb-3">
+            <div className="flex items-center gap-2">
+              <Sliders size={16} className="text-[#e07040]" />
+              <h3 className="font-sans font-bold text-sm text-[#f0ede6]">Skills Layout Editor</h3>
+            </div>
+            <button
+              onClick={() => setIsEditorOpen(false)}
+              className="text-[#888884] hover:text-[#f0ede6] transition-colors p-1"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 select-none font-sans text-xs">
+            {/* Map Scale */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Map Scale</span>
+                <span className="font-mono text-[#e07040]">{settings.mapScale.toFixed(2)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.6"
+                max="1.5"
+                step="0.05"
+                value={settings.mapScale}
+                onChange={(e) => updateSetting('mapScale', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            {/* Canvas Height */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Canvas Height</span>
+                <span className="font-mono text-[#e07040]">{settings.canvasHeight}px</span>
+              </div>
+              <input
+                type="range"
+                min="350"
+                max="800"
+                step="10"
+                value={settings.canvasHeight}
+                onChange={(e) => updateSetting('canvasHeight', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            {/* Map Offsets */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Map Translation X</span>
+                <span className="font-mono text-[#e07040]">{settings.mapX}px</span>
+              </div>
+              <input
+                type="range"
+                min="-150"
+                max="150"
+                step="5"
+                value={settings.mapX}
+                onChange={(e) => updateSetting('mapX', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Map Translation Y</span>
+                <span className="font-mono text-[#e07040]">{settings.mapY}px</span>
+              </div>
+              <input
+                type="range"
+                min="-150"
+                max="150"
+                step="5"
+                value={settings.mapY}
+                onChange={(e) => updateSetting('mapY', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            {/* Header Scale */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Header Scale</span>
+                <span className="font-mono text-[#e07040]">{settings.headerScale.toFixed(2)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.7"
+                max="1.3"
+                step="0.05"
+                value={settings.headerScale}
+                onChange={(e) => updateSetting('headerScale', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            {/* Header Translation */}
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Header Translation X</span>
+                <span className="font-mono text-[#e07040]">{settings.headerX}px</span>
+              </div>
+              <input
+                type="range"
+                min="-100"
+                max="100"
+                step="5"
+                value={settings.headerX}
+                onChange={(e) => updateSetting('headerX', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[#888884] mb-1">
+                <span>Header Translation Y</span>
+                <span className="font-mono text-[#e07040]">{settings.headerY}px</span>
+              </div>
+              <input
+                type="range"
+                min="-100"
+                max="100"
+                step="5"
+                value={settings.headerY}
+                onChange={(e) => updateSetting('headerY', Number(e.target.value))}
+                className="w-full h-1 bg-[#2a2a28] rounded-lg appearance-none cursor-pointer accent-[#e07040]"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 mt-5 pt-3 border-t border-[#3a3a38]">
+            <div className="flex gap-3">
+              <button
+                onClick={resetSettings}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#2a2a28] hover:bg-[#3a3a38] text-[#f0ede6] rounded-xl font-medium text-xs transition-colors duration-200"
+              >
+                <RotateCcw size={12} />
+                <span>Reset</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(JSON.stringify(settings, null, 2));
+                  alert("Settings JSON copied to clipboard! You can paste them into DEFAULT_SETTINGS inside Skills.tsx.");
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#2a2a28] hover:bg-[#3a3a38] text-[#c8b89a] rounded-xl font-medium text-xs transition-colors duration-200"
+              >
+                <span>Copy Config</span>
+              </button>
+            </div>
+            <button
+              onClick={() => setIsEditorOpen(false)}
+              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 bg-[#e07040] hover:bg-[#c8b89a] hover:text-[#0d0d0c] text-[#0d0d0c] rounded-xl font-medium text-xs transition-colors duration-200"
+            >
+              <span>Save &amp; Close</span>
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
