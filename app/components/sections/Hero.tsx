@@ -223,10 +223,7 @@ export function Hero() {
         </div>
 
         {/* Right Column: Interactive Map Container */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+        <div
           className="w-full aspect-[8/5] relative overflow-visible group"
           style={{
             transform: mounted
@@ -235,8 +232,15 @@ export function Hero() {
             transformOrigin: 'center center',
           }}
         >
-          <InteractiveMap />
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+            className="w-full h-full"
+          >
+            <InteractiveMap />
+          </motion.div>
+        </div>
       </div>
 
       {/* Floating Layout Settings Editor Panel */}
