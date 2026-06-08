@@ -77,20 +77,39 @@
 }
 
 /* ==========================================================================
-   Smooth theme-switching transitions and arbitrary CSS class overrides
+   Smooth theme-switching transitions — ONLY active during theme toggle.
+   The .theme-transitioning class is added to <html> by JS during toggle
+   and removed after 600ms. This prevents transitions from firing during
+   normal scroll, which was the #1 cause of mobile lag.
    ========================================================================== */
-body, section, header, footer, input, textarea, button, a, div, .exp-card, .project-card, .skills-canvas-wrap {
+.theme-transitioning body,
+.theme-transitioning section,
+.theme-transitioning header,
+.theme-transitioning footer,
+.theme-transitioning input,
+.theme-transitioning textarea,
+.theme-transitioning button,
+.theme-transitioning a,
+.theme-transitioning div,
+.theme-transitioning .exp-card,
+.theme-transitioning .project-card,
+.theme-transitioning .skills-canvas-wrap {
   transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
               border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
               color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+              box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-svg circle, svg path, svg polygon, svg rect, svg line, svg text {
+.theme-transitioning svg circle,
+.theme-transitioning svg path,
+.theme-transitioning svg polygon,
+.theme-transitioning svg rect,
+.theme-transitioning svg line,
+.theme-transitioning svg text {
   transition: fill 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
               stroke 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
               color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+              opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* Surface Overrides */

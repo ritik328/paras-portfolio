@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Home, User, Cpu, Briefcase, FolderCode, GraduationCap, Mail, Sun, Moon } from 'lucide-react';
 import { useScrollPosition } from '@/app/lib/hooks/useScrollPosition';
 import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
@@ -26,16 +26,26 @@ export function Navbar() {
   const { scrollTo } = useSmoothScroll();
   const [isMobile, setIsMobile] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const themeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isScrolled = scrollPosition > 50;
 
+  // Debounced resize handler
+  const resizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      if (resizeTimerRef.current) clearTimeout(resizeTimerRef.current);
+      resizeTimerRef.current = setTimeout(() => {
+        setIsMobile(window.innerWidth < 768);
+      }, 150);
     };
-    handleResize();
+    // Initialize immediately
+    setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (resizeTimerRef.current) clearTimeout(resizeTimerRef.current);
+    };
   }, []);
 
   // Sync theme with local storage on mount
@@ -45,12 +55,30 @@ export function Navbar() {
     document.documentElement.setAttribute('data-theme', saved);
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
-  };
+
+    // Add transitioning class so CSS transitions fire during the switch
+    document.documentElement.classList.add('theme-transitioning');
+
+    // Clean up any existing timer
+    if (themeTimerRef.current) clearTimeout(themeTimerRef.current);
+
+    // Remove the class after transitions complete
+    themeTimerRef.current = setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning');
+    }, 600);
+  }, [theme]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (themeTimerRef.current) clearTimeout(themeTimerRef.current);
+    };
+  }, []);
 
   const isMobileBottom = isMobile && isScrolled;
 
@@ -65,11 +93,12 @@ export function Navbar() {
 
   return (
     <>
-      {/* Floating Dock Navigation */}
+      {/* Floating Dock Navigation — no `layout` prop to avoid expensive layout recalculations */}
       <motion.nav
-        layout
-        transition={{ type: 'spring', stiffness: 220, damping: 26 }}
-        className={`fixed z-50 flex items-center backdrop-blur-md transition-colors duration-300 -translate-x-1/2 left-1/2 ${
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className={`fixed z-50 flex items-center backdrop-blur-md transition-all duration-300 ease-out -translate-x-1/2 left-1/2 ${
           isMobileBottom ? 'bottom-6' : isMobile ? 'top-16' : 'top-5'
         } ${wrapperClass}`}
         role="navigation"
@@ -103,20 +132,40 @@ export function Navbar() {
         {/* Divider */}
         <div className={`w-[1px] bg-border/50 self-stretch my-2.5 mx-1 ${isMobileBottom ? 'my-2 mx-0.5' : 'my-2.5 mx-1'}`} />
 
-        {/* Theme Toggle Button */}
+        {/* Theme Toggle Button with animated Sun/Moon rotation */}
         <div className="relative group">
           <motion.button
             whileHover={{ scale: 1.15, y: isMobileBottom ? -1 : -2 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.9 }}
             onClick={toggleTheme}
-            className={`flex items-center justify-center text-text-secondary hover:text-accent-orange hover:bg-surface-tertiary/50 transition-colors duration-200 cursor-pointer ${buttonSizeClass}`}
+            className={`flex items-center justify-center text-text-secondary hover:text-accent-orange hover:bg-surface-tertiary/50 transition-colors duration-200 cursor-pointer overflow-hidden ${buttonSizeClass}`}
             aria-label="Toggle light and dark theme"
           >
-            {theme === 'dark' ? (
-              <Sun className={iconSizeClass} />
-            ) : (
-              <Moon className={iconSizeClass} />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {theme === 'dark' ? (
+                <motion.div
+                  key="sun"
+                  initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                  exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="flex items-center justify-center"
+                >
+                  <Sun className={iconSizeClass} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="moon"
+                  initial={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                  exit={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="flex items-center justify-center"
+                >
+                  <Moon className={iconSizeClass} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.button>
           <div className={`absolute left-1/2 -translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 ${tooltipPositionClass}`}>
             <div className="px-2.5 py-1 bg-surface-secondary border border-border text-text-primary text-[10px] font-mono rounded-lg shadow-xl whitespace-nowrap">

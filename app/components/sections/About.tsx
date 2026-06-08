@@ -28,7 +28,7 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
   }, [isInView, motionValue, value]);
 
   useEffect(() => {
-    return spring.onChange((latest) => {
+    return spring.on('change', (latest) => {
       if (ref.current) {
         ref.current.textContent = Math.round(latest) + suffix;
       }
@@ -48,7 +48,7 @@ export function About() {
   return (
     <section
       id="about"
-      className="py-[120px] max-sm:py-[60px] bg-[#0d0d0c]"
+      className="py-[120px] max-sm:py-[60px] bg-surface-primary"
       aria-labelledby="about-heading"
     >
       <div className="max-w-[1200px] mx-auto px-20 max-md:px-6" ref={sectionRef}>
