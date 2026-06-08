@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
 
 interface Node {
@@ -251,6 +251,29 @@ export function InteractiveMap() {
   const { scrollTo } = useSmoothScroll();
   const [hoveredGroupId, setHoveredGroupId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+
+  const lastCenterClickRef = useRef<number>(0);
+  const centerClickCountRef = useRef<number>(0);
+
+  const handleCenterNodeClick = () => {
+    const now = Date.now();
+    console.log("Hero map center node clicked, time since last:", now - lastCenterClickRef.current);
+    if (now - lastCenterClickRef.current < 800) {
+      centerClickCountRef.current += 1;
+    } else {
+      centerClickCountRef.current = 1;
+    }
+    lastCenterClickRef.current = now;
+    console.log("Hero map center click count:", centerClickCountRef.current);
+
+    if (centerClickCountRef.current >= 3) {
+      console.log("Toggling Hero Layout Editor via map center node triple-click");
+      window.dispatchEvent(new CustomEvent('toggle-hero-editor'));
+      centerClickCountRef.current = 0;
+    } else {
+      scrollTo('#about');
+    }
+  };
 
   const handleNodeHover = (node: Node | null) => {
     if (node) {
@@ -539,16 +562,6 @@ export function InteractiveMap() {
               onMouseLeave={() => handleNodeHover(null)}
               className="group"
             >
-              {/* Interaction hitbox */}
-              <circle
-                cx={node.x}
-                cy={node.y}
-                r={24}
-                fill="transparent"
-                className="cursor-pointer"
-                onClick={() => handleNodeClick(node.target)}
-              />
-
               {/* Draw Shape */}
               {renderNodeShape(node)}
 
@@ -603,6 +616,23 @@ export function InteractiveMap() {
                   </text>
                 )}
               </g>
+
+              {/* Interaction hitbox (rendered last so it sits on top and captures clicks/hovers) */}
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r={node.id === 'center' ? 30 : 24}
+                fill="black"
+                opacity="0"
+                className="cursor-pointer"
+                onClick={() => {
+                  if (node.id === 'center') {
+                    handleCenterNodeClick();
+                  } else {
+                    handleNodeClick(node.target);
+                  }
+                }}
+              />
             </g>
           );
         })}

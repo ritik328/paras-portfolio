@@ -227,14 +227,17 @@ export function Skills() {
 
   const handleCenterNodeClick = () => {
     const now = Date.now();
+    console.log("Skills map center node clicked, time since last:", now - lastCenterClickRef.current);
     if (now - lastCenterClickRef.current < 800) {
       centerClickCountRef.current += 1;
     } else {
       centerClickCountRef.current = 1;
     }
     lastCenterClickRef.current = now;
+    console.log("Skills map center click count:", centerClickCountRef.current);
 
     if (centerClickCountRef.current >= 3) {
+      console.log("Toggling Skills Editor panel. Open state was:", isEditorOpen);
       setIsEditorOpen((prev) => !prev);
       centerClickCountRef.current = 0;
     }
@@ -631,8 +634,9 @@ export function Skills() {
                     <circle
                       cx={node.x}
                       cy={node.y}
-                      r={20}
-                      fill="transparent"
+                      r={node.id === 'center' ? 30 : 20}
+                      fill="black"
+                      opacity="0"
                       className="cursor-pointer"
                       onClick={node.id === 'center' ? handleCenterNodeClick : undefined}
                     />
