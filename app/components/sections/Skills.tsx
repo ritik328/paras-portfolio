@@ -290,8 +290,8 @@ export function Skills() {
   const renderNodeShape = (node: SkillNode) => {
     const { x, y, shape, id } = node;
     const isActive = hoveredNodeId === id || (hoveredGroupId === node.group && id !== 'center');
-    const strokeColor = isActive ? node.catColor : '#3a3a38';
-    const dotColor = isActive ? node.catColor : '#888884';
+    const strokeColor = isActive ? node.catColor : 'var(--color-border)';
+    const dotColor = isActive ? node.catColor : 'var(--color-text-secondary)';
 
     switch (shape) {
       case 'star': // Center cog shape
@@ -331,10 +331,10 @@ export function Skills() {
                 />
               );
             })}
-            <circle cx={0} cy={0} r={10} fill="#e07040" />
-            <circle cx={0} cy={0} r={4} fill="#0d0d0c" />
-          </g>
-        );
+             <circle cx={0} cy={0} r={10} fill="#e07040" />
+             <circle cx={0} cy={0} r={4} fill="var(--background)" />
+           </g>
+         );
 
       case 'hexagon': {
         const hexPoints = [
@@ -351,7 +351,7 @@ export function Skills() {
         return (
           <polygon
             points={hexPoints}
-            fill="#161614"
+            fill="var(--color-surface-secondary)"
             stroke={strokeColor}
             strokeWidth={1.5}
             className="transition-all duration-300 cursor-pointer"
@@ -367,7 +367,7 @@ export function Skills() {
               y={y - 7}
               width={14}
               height={14}
-              fill="#161614"
+              fill="var(--color-surface-secondary)"
               stroke={strokeColor}
               strokeWidth={1.5}
               className="transition-all duration-300"
@@ -395,7 +395,7 @@ export function Skills() {
           <g className="cursor-pointer">
             <polygon
               points={triPoints}
-              fill="#161614"
+              fill="var(--color-surface-secondary)"
               stroke={strokeColor}
               strokeWidth={1.5}
               className="transition-all duration-300"
@@ -417,7 +417,7 @@ export function Skills() {
             cx={x}
             cy={y}
             r={7}
-            fill={isActive ? node.catColor : '#161614'}
+            fill={isActive ? node.catColor : 'var(--color-surface-secondary)'}
             stroke={strokeColor}
             strokeWidth={1.5}
             className="transition-all duration-300 cursor-pointer"
@@ -489,7 +489,7 @@ export function Skills() {
             {/* Background Grid Lines (blueprint styling) */}
             <defs>
               <pattern id="skills-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#222220" strokeWidth="0.5" />
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--color-grid)" strokeWidth="0.5" />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#skills-grid)" opacity="0.3" />
@@ -498,7 +498,7 @@ export function Skills() {
             <g>
               {CONNECTIONS.map((conn, idx) => {
                 const active = isConnectionActive(conn);
-                const color = active ? getActiveColor(conn) : '#3a3a38';
+                const color = active ? getActiveColor(conn) : 'var(--color-border)';
                 return (
                   <path
                     key={`line-${idx}`}
@@ -580,7 +580,7 @@ export function Skills() {
                         y={node.y}
                         textAnchor="middle"
                         dy="0.35em"
-                        fill={isActive ? node.catColor : '#f0ede6'}
+                        fill={isActive ? node.catColor : 'var(--color-text-primary)'}
                         fontSize={12}
                         fontWeight="bold"
                         className="pointer-events-none font-mono"
@@ -603,10 +603,10 @@ export function Skills() {
                         }
                         fill={
                           isActive
-                            ? '#f0ede6'
+                            ? 'var(--color-text-primary)'
                             : node.id === 'center'
-                            ? '#f0ede6'
-                            : '#888884'
+                            ? 'var(--color-text-primary)'
+                            : 'var(--color-text-secondary)'
                         }
                         fontFamily="var(--font-sans), sans-serif"
                         className="transition-colors duration-300"
@@ -621,7 +621,7 @@ export function Skills() {
                           y={ly + 16}
                           textAnchor={anchor}
                           fontSize={10}
-                          fill="#888884"
+                          fill="var(--color-text-secondary)"
                           fontFamily="var(--font-mono), monospace"
                           className="font-semibold tracking-wider"
                         >

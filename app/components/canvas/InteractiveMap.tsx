@@ -349,7 +349,7 @@ export function InteractiveMap() {
               );
             })}
             <circle cx={0} cy={0} r={10} fill="#e07040" />
-            <circle cx={0} cy={0} r={4} fill="#0d0d0c" />
+            <circle cx={0} cy={0} r={4} fill="var(--background)" />
           </g>
         );
 
@@ -368,8 +368,8 @@ export function InteractiveMap() {
         return (
           <polygon
             points={hexPoints}
-            fill="#161614"
-            stroke={isActive ? '#e07040' : '#3a3a38'}
+            fill="var(--color-surface-secondary)"
+            stroke={isActive ? '#e07040' : 'var(--color-border)'}
             strokeWidth={1.5}
             className="transition-all duration-300 cursor-pointer"
             onClick={() => handleNodeClick(node.target)}
@@ -385,8 +385,8 @@ export function InteractiveMap() {
               y={y - 7}
               width={14}
               height={14}
-              fill="#161614"
-              stroke={isActive ? '#e07040' : '#3a3a38'}
+              fill="var(--color-surface-secondary)"
+              stroke={isActive ? '#e07040' : 'var(--color-border)'}
               strokeWidth={1.5}
               className="transition-all duration-300"
             />
@@ -394,7 +394,7 @@ export function InteractiveMap() {
               cx={x}
               cy={y}
               r={1.8}
-              fill={isActive ? '#e07040' : '#888884'}
+              fill={isActive ? '#e07040' : 'var(--color-text-secondary)'}
               className="transition-colors duration-300"
             />
           </g>
@@ -413,8 +413,8 @@ export function InteractiveMap() {
           <g className="cursor-pointer" onClick={() => handleNodeClick(node.target)}>
             <polygon
               points={triPoints}
-              fill="#161614"
-              stroke={isActive ? '#e07040' : '#3a3a38'}
+              fill="var(--color-surface-secondary)"
+              stroke={isActive ? '#e07040' : 'var(--color-border)'}
               strokeWidth={1.5}
               className="transition-all duration-300"
             />
@@ -422,7 +422,7 @@ export function InteractiveMap() {
               cx={x}
               cy={y + 1}
               r={1.5}
-              fill={isActive ? '#e07040' : '#888884'}
+              fill={isActive ? '#e07040' : 'var(--color-text-secondary)'}
               className="transition-colors duration-300"
             />
           </g>
@@ -435,8 +435,8 @@ export function InteractiveMap() {
             cx={x}
             cy={y}
             r={7}
-            fill={isActive ? '#e07040' : '#161614'}
-            stroke={isActive ? '#e07040' : '#3a3a38'}
+            fill={isActive ? '#e07040' : 'var(--color-surface-secondary)'}
+            stroke={isActive ? '#e07040' : 'var(--color-border)'}
             strokeWidth={1.5}
             className="transition-all duration-300 cursor-pointer"
             onClick={() => handleNodeClick(node.target)}
@@ -450,8 +450,8 @@ export function InteractiveMap() {
               cx={x}
               cy={y}
               r={7}
-              fill="#0d0d0c"
-              stroke={isActive ? '#e07040' : '#3a3a38'}
+              fill="var(--color-surface-primary)"
+              stroke={isActive ? '#e07040' : 'var(--color-border)'}
               strokeWidth={1.5}
               className="transition-all duration-300"
             />
@@ -459,7 +459,7 @@ export function InteractiveMap() {
               cx={x}
               cy={y}
               r={2}
-              fill={isActive ? '#e07040' : '#f0ede6'}
+              fill={isActive ? '#e07040' : 'var(--color-text-primary)'}
               className="transition-colors duration-300"
             />
           </g>
@@ -482,7 +482,7 @@ export function InteractiveMap() {
       {/* Background Grid Lines (minimally styled like blueprint paper) */}
       <defs>
         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#222220" strokeWidth="0.5" />
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--color-grid)" strokeWidth="0.5" />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#grid)" opacity="0.3" />
@@ -496,7 +496,7 @@ export function InteractiveMap() {
               key={idx}
               d={conn.path}
               fill="none"
-              stroke={active ? '#e07040' : '#3a3a38'}
+              stroke={active ? '#e07040' : 'var(--color-border)'}
               strokeWidth={active ? 2 : 1}
               strokeDasharray={conn.dashed ? '4,4' : undefined}
               className="transition-all duration-300 ease-out"
@@ -572,7 +572,7 @@ export function InteractiveMap() {
                   y={node.y}
                   textAnchor="middle"
                   dy="0.35em"
-                  fill={isActive ? '#e07040' : '#f0ede6'}
+                  fill={isActive ? '#e07040' : 'var(--color-text-primary)'}
                   fontSize={12}
                   fontWeight="bold"
                   className="pointer-events-none font-mono cursor-pointer"
@@ -594,7 +594,7 @@ export function InteractiveMap() {
                   textAnchor={anchor}
                   fontSize={node.id === 'center' ? 16 : node.shape === 'hexagon' ? 13 : 12}
                   fontWeight={node.id === 'center' || node.shape === 'hexagon' || isActive ? '700' : '500'}
-                  fill={isActive ? '#f0ede6' : node.id === 'center' ? '#f0ede6' : '#888884'}
+                  fill={isActive ? 'var(--color-text-primary)' : node.id === 'center' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'}
                   fontFamily="var(--font-sans), sans-serif"
                   className="transition-colors duration-300"
                 >
@@ -608,7 +608,7 @@ export function InteractiveMap() {
                     y={ly + 16}
                     textAnchor={anchor}
                     fontSize={10}
-                    fill="#888884"
+                    fill="var(--color-text-secondary)"
                     fontFamily="var(--font-mono), monospace"
                     className="font-semibold tracking-wider"
                   >

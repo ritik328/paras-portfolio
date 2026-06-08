@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Surface colors */
+  /* Surface colors (Dark Mode default) */
   --color-surface-primary: #0d0d0c;
   --color-surface-secondary: #1a1a18;
   --color-surface-tertiary: #2a2a28;
@@ -14,6 +14,7 @@
   --color-accent-orange: #e07040;
   --color-accent-cream: #c8b89a;
   --color-border: #3a3a38;
+  --color-grid: #222220;
   
   /* Background and foreground aliases */
   --background: #0d0d0c;
@@ -32,6 +33,129 @@
 
   /* Font mapping */
   --font-display: var(--font-serif);
+}
+
+[data-theme='light'] {
+  /* Warm off-white light theme variables */
+  --color-surface-primary: #FAF9F6; /* Alabaster warm white */
+  --color-surface-secondary: #F3F1EB; /* Soft warm secondary cream */
+  --color-surface-tertiary: #E6E4DD; /* Aligned warm gray tertiary */
+  
+  --color-text-primary: #1C1B1A; /* Premium dark charcoal */
+  --color-text-secondary: #706F6A; /* Soft medium warm gray */
+  
+  --color-accent-orange: #D95829; /* Vibrant clay orange for lighter backgrounds */
+  --color-accent-cream: #B4A485; /* Warm golden bronze accent */
+  --color-border: #E3DFD5; /* Subtle borders */
+  --color-grid: #E3DFD5; /* Blueprint grid line color */
+  
+  --background: #FAF9F6;
+  --foreground: #1C1B1A;
+  --color-background: #FAF9F6;
+  --color-foreground: #1C1B1A;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  /* Theme-aware Tailwind mappings */
+  --color-surface-primary: var(--color-surface-primary);
+  --color-surface-secondary: var(--color-surface-secondary);
+  --color-surface-tertiary: var(--color-surface-tertiary);
+  
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  
+  --color-accent-orange: var(--color-accent-orange);
+  --color-accent-cream: var(--color-accent-cream);
+  --color-border: var(--color-border);
+  
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+}
+
+/* ==========================================================================
+   Smooth theme-switching transitions and arbitrary CSS class overrides
+   ========================================================================== */
+body, section, header, footer, input, textarea, button, a, div, .exp-card, .project-card, .skills-canvas-wrap {
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+svg circle, svg path, svg polygon, svg rect, svg line, svg text {
+  transition: fill 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              stroke 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='light'] {
+  /* Surface Overrides */
+  .bg-\[\#0d0d0c\], .bg-surface-primary {
+    background-color: var(--color-surface-primary) !important;
+  }
+  .bg-\[\#1a1a18\], .bg-surface-secondary {
+    background-color: var(--color-surface-secondary) !important;
+  }
+  .bg-\[\#2a2a28\], .bg-surface-tertiary {
+    background-color: var(--color-surface-tertiary) !important;
+  }
+  .bg-\[\#161614\], .bg-surface-secondary {
+    background-color: var(--color-surface-secondary) !important;
+  }
+  
+  /* Text Overrides */
+  .text-\[\#f0ede6\], .text-text-primary, .text-foreground {
+    color: var(--color-text-primary) !important;
+  }
+  .text-\[\#888884\], .text-text-secondary {
+    color: var(--color-text-secondary) !important;
+  }
+  .text-\[\#c8b89a\], .text-accent-cream {
+    color: var(--color-accent-cream) !important;
+  }
+  .text-\[\#e07040\], .text-accent-orange {
+    color: var(--color-accent-orange) !important;
+  }
+  
+  /* Border Overrides */
+  .border-\[\#3a3a38\], .border-border {
+    border-color: var(--color-border) !important;
+  }
+  .border-\[\#e07040\] {
+    border-color: var(--color-accent-orange) !important;
+  }
+  
+  /* Hover Overrides */
+  .hover\:border-\[\#e07040\]:hover {
+    border-color: var(--color-accent-orange) !important;
+  }
+  .hover\:text-\[\#e07040\]:hover {
+    color: var(--color-accent-orange) !important;
+  }
+  .hover\:text-\[\#f0ede6\]:hover {
+    color: var(--color-text-primary) !important;
+  }
+  .hover\:bg-\[\#3a3a38\]:hover {
+    background-color: var(--color-surface-tertiary) !important;
+  }
+  .hover\:bg-\[\#2a2a28\]:hover {
+    background-color: var(--color-surface-tertiary) !important;
+  }
+  
+  /* Grid patterns and atmosphere glows */
+  .skills-bg-grid {
+    background-image: radial-gradient(circle, rgba(217, 88, 41, 0.05) 1px, transparent 1px) !important;
+  }
+  
+  ::selection {
+    background-color: rgba(217, 88, 41, 0.2) !important;
+    color: var(--color-text-primary) !important;
+  }
 }
 
 /* ==============================

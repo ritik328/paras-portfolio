@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Home, User, Cpu, Briefcase, FolderCode, GraduationCap, Mail } from 'lucide-react';
+import { Home, User, Cpu, Briefcase, FolderCode, GraduationCap, Mail, Sun, Moon } from 'lucide-react';
 import { useScrollPosition } from '@/app/lib/hooks/useScrollPosition';
 import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
 
@@ -25,9 +25,7 @@ export function Navbar() {
   const scrollPosition = useScrollPosition();
   const { scrollTo } = useSmoothScroll();
   const [isMobile, setIsMobile] = useState(false);
-
-  const lastClickRef = useRef<number>(0);
-  const clickCountRef = useRef<number>(0);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   const isScrolled = scrollPosition > 50;
 
@@ -40,20 +38,18 @@ export function Navbar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleBrandClick = () => {
-    scrollTo('#top');
-    const now = Date.now();
-    if (now - lastClickRef.current < 800) {
-      clickCountRef.current += 1;
-    } else {
-      clickCountRef.current = 1;
-    }
-    lastClickRef.current = now;
+  // Sync theme with local storage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
+    setTheme(saved);
+    document.documentElement.setAttribute('data-theme', saved);
+  }, []);
 
-    if (clickCountRef.current >= 3) {
-      window.dispatchEvent(new CustomEvent('toggle-hero-editor'));
-      clickCountRef.current = 0;
-    }
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
   };
 
   const isMobileBottom = isMobile && isScrolled;
@@ -69,23 +65,6 @@ export function Navbar() {
 
   return (
     <>
-      {/* Brand logo header (fades out on mobile scroll down) */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-40 pointer-events-none transition-all duration-300 ${
-          isScrolled && isMobile ? 'opacity-0 -translate-y-4' : 'opacity-100'
-        }`}
-      >
-        <div className="max-w-[1200px] mx-auto px-6 md:px-20 h-20 flex justify-between items-center">
-          <button
-            onClick={handleBrandClick}
-            className="pointer-events-auto font-serif text-lg tracking-widest text-[#f0ede6] hover:text-[#e07040] transition-all duration-300 select-none cursor-pointer border border-[#3a3a38]/40 px-3.5 py-1 bg-[#1a1a18]/65 rounded-xl backdrop-blur-md shadow-sm hover:border-[#e07040]/30 hover:shadow-[#e07040]/5"
-            aria-label="Scroll to top"
-          >
-            PN
-          </button>
-        </div>
-      </header>
-
       {/* Floating Dock Navigation */}
       <motion.nav
         layout
@@ -120,6 +99,31 @@ export function Navbar() {
             </div>
           </div>
         ))}
+
+        {/* Divider */}
+        <div className={`w-[1px] bg-[#3a3a38]/50 self-stretch my-2.5 mx-1 ${isMobileBottom ? 'my-2 mx-0.5' : 'my-2.5 mx-1'}`} />
+
+        {/* Theme Toggle Button */}
+        <div className="relative group">
+          <motion.button
+            whileHover={{ scale: 1.15, y: isMobileBottom ? -1 : -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleTheme}
+            className={`flex items-center justify-center text-[#888884] hover:text-[#e07040] hover:bg-[#2a2a28]/50 transition-colors duration-200 cursor-pointer ${buttonSizeClass}`}
+            aria-label="Toggle light and dark theme"
+          >
+            {theme === 'dark' ? (
+              <Sun className={iconSizeClass} />
+            ) : (
+              <Moon className={iconSizeClass} />
+            )}
+          </motion.button>
+          <div className={`absolute left-1/2 -translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 ${tooltipPositionClass}`}>
+            <div className="px-2.5 py-1 bg-[#161614] border border-[#3a3a38] text-[#f0ede6] text-[10px] font-mono rounded-lg shadow-xl whitespace-nowrap">
+              {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
+            </div>
+          </div>
+        </div>
       </motion.nav>
 
       {/* Accessibility Skip Link */}

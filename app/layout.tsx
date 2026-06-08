@@ -79,9 +79,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerifDisplay.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full`}
+      className={`${dmSerifDisplay.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+          } catch (_) {}
+        ` }} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="canonical" href="https://parasnegi.vercel.app" />
         <script
