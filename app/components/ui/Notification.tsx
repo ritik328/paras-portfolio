@@ -74,49 +74,49 @@ export function Notification() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Background Revealed Swipe Action Button */}
-          <button
-            onClick={handleActionClick}
-            className="ios-notify-action-btn"
-            aria-label="Scroll to contact section and say hi"
-          >
-            <span className="ios-notify-action-text">Say Hi</span>
-          </button>
+          <div className={`ios-notify-slide-container ${isHovered ? 'swipe-active' : ''}`}>
+            {/* Foreground Notification Card */}
+            <div
+              onClick={handleActionClick}
+              className="ios-notify-card cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && scrollTo('#contact')}
+            >
+              {/* App Icon Bubble */}
+              <div className="ios-notify-icon-container">
+                <IconSpeechBubble size={22} />
+              </div>
 
-          {/* Foreground Notification Card */}
-          <div
-            onClick={handleActionClick}
-            className={`ios-notify-card cursor-pointer ${
-              isHovered ? 'swipe-active' : ''
-            }`}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && scrollTo('#contact')}
-          >
-            {/* App Icon Bubble */}
-            <div className="ios-notify-icon-container">
-              <IconSpeechBubble size={22} />
+              {/* Notification Copy Details */}
+              <div className="ios-notify-body">
+                <span className="ios-notify-appname">Paras Negi</span>
+                <span className="ios-notify-message">
+                  Hey! Thanks for visiting. Feel free to connect or drop a message! ✉️
+                </span>
+              </div>
+
+              {/* Time stamps & Dismiss triggers */}
+              <div className="ios-notify-meta">
+                <span className="ios-notify-time">now</span>
+                <button
+                  onClick={handleDismiss}
+                  className="ios-notify-close-btn"
+                  aria-label="Dismiss notification card"
+                >
+                  <IconClose />
+                </button>
+              </div>
             </div>
 
-            {/* Notification Copy Details */}
-            <div className="ios-notify-body">
-              <span className="ios-notify-appname">Paras Negi</span>
-              <span className="ios-notify-message">
-                Hey! Thanks for visiting. Feel free to connect or drop a message! ✉️
-              </span>
-            </div>
-
-            {/* Time stamps & Dismiss triggers */}
-            <div className="ios-notify-meta">
-              <span className="ios-notify-time">now</span>
-              <button
-                onClick={handleDismiss}
-                className="ios-notify-close-btn"
-                aria-label="Dismiss notification card"
-              >
-                <IconClose />
-              </button>
-            </div>
+            {/* Background Revealed Swipe Action Button */}
+            <button
+              onClick={handleActionClick}
+              className="ios-notify-action-btn"
+              aria-label="Scroll to contact section and say hi"
+            >
+              <span className="ios-notify-action-text">Say Hi</span>
+            </button>
           </div>
         </motion.div>
       )}
