@@ -212,9 +212,6 @@ export function Hero() {
       {/* Right-edge rule — matches the spider web canvas boundary */}
       <div className="hero-right-rule" aria-hidden="true" />
 
-      {/* Large ambient letter in bg */}
-      <span className="hero-ambient-letter" aria-hidden="true">P</span>
-
       <div
         className="max-w-[1200px] w-full mx-auto px-6 md:px-20 z-10 grid md:grid-cols-2 items-center my-auto py-12 transition-all duration-300"
         style={{

@@ -68,7 +68,6 @@ export function About() {
               About <em>Me</em>
             </motion.h2>
           </div>
-          <span className="about-header-num" aria-hidden="true">02</span>
         </div>
 
         <div className="about-grid">
