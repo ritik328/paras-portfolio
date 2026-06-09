@@ -3,18 +3,6 @@
 import { useEffect, useRef } from 'react';
 import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
 
-interface Stat {
-  label: string;
-  value: string;
-  numericValue?: number;
-}
-
-const stats: Stat[] = [
-  { label: 'Projects Built', value: '10+', numericValue: 10 },
-  { label: 'Internships', value: '2', numericValue: 2 },
-  { label: 'Technologies', value: '20+', numericValue: 20 },
-];
-
 function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
@@ -38,8 +26,18 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
   return <span ref={ref}>0{suffix}</span>;
 }
 
+const TAGS = [
+  'Problem Solver',
+  'Open Source',
+  'AI Enthusiast',
+  'Team Leader',
+  'Clean Code',
+  'Agile',
+];
+
 /**
- * About section with 60/40 asymmetric grid layout, biography, and animated statistics.
+ * About section with premium asymmetric layout, vertical ambient text,
+ * highlighted biography quote, skills chips, and interactive statistics.
  */
 export function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -48,89 +46,146 @@ export function About() {
   return (
     <section
       id="about"
-      className="py-[120px] max-sm:py-[60px] bg-surface-primary"
+      className="about-section"
       aria-labelledby="about-heading"
+      ref={sectionRef}
     >
-      <div className="max-w-[1200px] mx-auto px-20 max-md:px-6" ref={sectionRef}>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          id="about-heading"
-          className="text-section-heading text-text-primary mb-16"
-        >
-          About Me
-        </motion.h2>
+      {/* Background blueprint grid overlay */}
+      <div className="about-bg" />
 
-        <div className="grid md:grid-cols-[60%_40%] gap-12 items-start about-bio">
-          {/* Biography - Left 60% */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <p className="font-serif text-lg md:text-xl text-text-primary leading-relaxed mb-6">
-              I&apos;m a passionate Full-Stack Developer currently pursuing B.Tech in Computer
-              Science at Amritsar Group of Colleges. I love building web applications that solve
-              real-world problems with clean code and intuitive design.
-            </p>
-            <p className="font-serif text-lg text-text-secondary leading-relaxed mb-6">
-              My journey in tech spans across the full stack — from crafting pixel-perfect
-              frontends with React.js to building robust backends with Django and Node.js.
-              I&apos;ve also explored the world of AI tools and how they can supercharge
-              developer productivity.
-            </p>
-            <p className="font-serif text-lg text-text-secondary leading-relaxed">
-              When I&apos;m not coding, I&apos;m exploring new technologies, contributing to
-              open-source projects, and constantly learning to stay ahead in the ever-evolving
-              tech landscape.
-            </p>
+      <div className="about-container">
+        {/* Section Header */}
+        <div className="about-header">
+          <div>
+            <p className="about-eyebrow">Who I Am</p>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              id="about-heading"
+              className="about-title"
+            >
+              About <em>Me</em>
+            </motion.h2>
+          </div>
+          <span className="about-header-num" aria-hidden="true">02</span>
+        </div>
 
-            {/* Accent line */}
+        <div className="about-grid">
+          {/* Left Column: Biography */}
+          <div className="about-left">
+            {/* Highlighted Quote Block */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="about-quote"
+            >
+              <blockquote className="about-quote-text">
+                "I build things that live at the intersection of clean code and intuitive design — solving real problems with elegant solutions."
+              </blockquote>
+            </motion.div>
+
+            {/* Paragraphs */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="about-bio"
+            >
+              <p className="about-bio-p">
+                I'm a passionate Full-Stack Developer currently pursuing <strong className="font-semibold">B.Tech in Computer Science</strong> at Amritsar Group of Colleges. My journey spans the full stack — from crafting pixel-perfect frontends with React.js to building robust backends with Django and Node.js.
+              </p>
+              <p className="about-bio-p">
+                I've explored the world of <strong className="font-semibold">AI tools</strong> and how they can supercharge developer productivity — integrating Claude AI, ChatGPT, and Notion AI into real workflows. When I'm not coding, I'm contributing to open-source projects and staying ahead of the ever-evolving tech landscape.
+              </p>
+            </motion.div>
+
+            {/* Divider line */}
             <motion.div
               initial={{ scaleX: 0 }}
               animate={isInView ? { scaleX: 1 } : {}}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="mt-8 h-px bg-gradient-to-r from-accent-orange to-transparent origin-left"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="about-divider origin-left"
             />
-          </motion.div>
 
-          {/* Statistics - Right 40% */}
-          <div className="space-y-8">
-            {stats.map((stat, index) => (
+            {/* Tag Pills */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="about-tags"
+              aria-label="Personal traits and methodology"
+            >
+              {TAGS.map((tag) => (
+                <span key={tag} className="about-tag">
+                  {tag}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Right Column: Statistics & Current Info Card */}
+          <div className="about-right">
+            {/* Large background vertical text */}
+            <span className="about-ambient-text" aria-hidden="true">About</span>
+
+            {/* Stats Stack */}
+            <div className="about-stats">
+              {/* Stat 1 */}
               <motion.div
-                key={stat.label}
                 initial={{ opacity: 0, x: 30 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.3 + index * 0.15 }}
-                className="group"
+                transition={{ duration: 0.6, delay: 0.25 }}
+                className="about-stat-item"
               >
-                <div className="text-5xl font-serif text-accent-orange mb-2 tabular-nums">
-                  {stat.numericValue !== undefined ? (
-                    <AnimatedCounter
-                      value={stat.numericValue}
-                      suffix={stat.value.replace(/\d+/, '')}
-                    />
-                  ) : (
-                    stat.value
-                  )}
+                <div className="about-stat-num">
+                  <AnimatedCounter value={10} /><em>+</em>
                 </div>
-                <div className="text-text-secondary font-sans text-sm uppercase tracking-wider">
-                  {stat.label}
-                </div>
-                <div className="mt-3 h-px bg-border group-hover:bg-accent-orange transition-colors duration-300" />
+                <div className="about-stat-label">Projects Built</div>
               </motion.div>
-            ))}
 
-            {/* College info */}
+              {/* Stat 2 */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.35 }}
+                className="about-stat-item"
+              >
+                <div className="about-stat-num">
+                  <AnimatedCounter value={2} />
+                </div>
+                <div className="about-stat-label">Internships</div>
+              </motion.div>
+
+              {/* Stat 3 */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.45 }}
+                className="about-stat-item"
+              >
+                <div className="about-stat-num">
+                  <AnimatedCounter value={20} /><em>+</em>
+                </div>
+                <div className="about-stat-label">Technologies</div>
+              </motion.div>
+            </div>
+
+            {/* Currently At Card */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.7 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.55 }}
+              className="about-card"
             >
-              <div className="text-sm text-text-secondary uppercase tracking-wider mb-1">Currently At</div>
-              <div className="text-text-primary font-medium">Amritsar Group of Colleges</div>
-              <div className="text-text-secondary text-sm">B.Tech CSE · 2022 – 2026</div>
+              <div className="about-card-eyebrow">Currently At</div>
+              <h3 className="about-card-title">Amritsar Group of Colleges</h3>
+              <p className="about-card-desc">B.Tech CSE · 2022 — 2026</p>
+              <div className="about-card-badge" role="status" aria-label="Enrollment status">
+                <span className="about-card-badge-dot" aria-hidden="true" />
+                <span>Enrolled · Final Year</span>
+              </div>
             </motion.div>
           </div>
         </div>
