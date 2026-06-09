@@ -7,7 +7,6 @@ import { Projects } from './components/sections/Projects';
 import { Education } from './components/sections/Education';
 import { Contact } from './components/sections/Contact';
 import { Footer } from './components/sections/Footer';
-import { Notification } from './components/ui/Notification';
 
 /**
  * Main portfolio page assembling all section components in order.
@@ -16,7 +15,6 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <Notification />
       <main id="main-content">
         <Hero />
         <About />
