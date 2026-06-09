@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 /**
  * TubesCursor component.
  * Imports and renders the 3D WebGL Tubes Cursor trailing effect.
- * Features client-side ESM dynamic loading to bypass Next.js build-time bundling constraints.
+ * Uses client-side dynamic import of the local 'threejs-components' library to prevent SSR issues.
  */
 export function TubesCursor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,17 +18,15 @@ export function TubesCursor() {
 
     const initCursor = async () => {
       try {
-        // Safe runtime dynamic import of CDN ESM script to avoid Webpack compilation errors
-        const module = await new Function(
-          'return import("https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js")'
-        )();
+        // Dynamic import of the local node_module inside useEffect ensures it is client-only
+        const module = await import('threejs-components/build/cursors/tubes1.min.js' as any);
 
         if (isDestroyed || !canvasRef.current) return;
 
         const tubesCursorInit = module.default;
         app = tubesCursorInit(canvasRef.current, {
           tubes: {
-            colors: ["#e07040", "#c8b89a", "#888884"], // Adapted to match our portfolio colors (orange, cream, gray)
+            colors: ["#e07040", "#c8b89a", "#888884"], // Adapted to match portfolio themes
             lights: {
               intensity: 200,
               colors: ["#e07040", "#c8b89a", "#50b450", "#60aed5"]
@@ -61,7 +59,6 @@ export function TubesCursor() {
           }
         };
 
-        // If component unmounted before load finished, clean up immediately
         if (isDestroyed) {
           cleanup();
         } else {
