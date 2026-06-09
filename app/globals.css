@@ -1870,5 +1870,350 @@ body {
   color: var(--color-accent-orange) !important;
 }
 
+/* ==========================================================================
+   Hero Section Design Styles
+   ========================================================================== */
+
+.hero-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Vertical rule on the right edge — visually separates left panel from spider web */
+.hero-right-rule {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #2a2a28 25%,
+    #2a2a28 75%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Large ambient "P" letter — decorative depth layer */
+.hero-ambient-letter {
+  position: absolute;
+  right: 20px;
+  bottom: -40px;
+  font-family: var(--font-display, 'DM Serif Display', Georgia, serif);
+  font-size: 280px;
+  color: rgba(255, 255, 255, 0.018);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+  z-index: 1;
+}
+
+/* ── Content wrapper ───────────────────────────────────────────────────────── */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  max-width: 440px;
+  width: 100%;
+}
+
+/* ── Status badge ──────────────────────────────────────────────────────────── */
+.hero-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(224, 112, 64, 0.08);
+  border: 0.5px solid rgba(224, 112, 64, 0.22);
+  border-radius: 20px;
+  padding: 5px 14px;
+  margin-bottom: 28px;
+  width: fit-content;
+}
+
+.hero-status-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-orange);
+  flex-shrink: 0;
+  animation: hero-pulse 2s infinite;
+}
+
+@keyframes hero-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+.hero-status-text {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-orange);
+  font-weight: 500;
+}
+
+/* ── Name block ────────────────────────────────────────────────────────────── */
+.hero-name-block {
+  margin-bottom: 20px;
+}
+
+.hero-name-first {
+  font-family: var(--font-display, 'DM Serif Display', Georgia, serif);
+  font-size: clamp(64px, 8vw, 92px);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--color-text-primary);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  display: block;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.hero-name-block:hover .hero-name-first {
+  color: var(--color-accent-orange);
+}
+
+.hero-name-last {
+  font-family: var(--font-display, 'DM Serif Display', Georgia, serif);
+  font-size: clamp(64px, 8vw, 92px);
+  font-weight: 400;
+  font-style: italic;          /* italic = warm, editorial */
+  color: var(--color-accent-cream); /* warm cream — softer than white */
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  display: block;
+  /* Stagger indent */
+  padding-left: 24px;
+  transition: color 0.3s ease;
+}
+
+.hero-name-block:hover .hero-name-last {
+  color: var(--color-accent-orange);
+}
+
+/* ── Role row ──────────────────────────────────────────────────────────────── */
+.hero-role-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.hero-role-line {
+  width: 28px;
+  height: 0.5px;
+  background: var(--color-accent-orange);
+  flex-shrink: 0;
+}
+
+.hero-role {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-accent-orange);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Bio ───────────────────────────────────────────────────────────────────── */
+.hero-bio {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+  margin: 0 0 32px;
+  max-width: 380px;
+}
+
+.hero-bio-strong {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+/* ── Divider ───────────────────────────────────────────────────────────────── */
+.hero-divider {
+  height: 0.5px;
+  background: var(--color-border);
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* ── Skill chips ───────────────────────────────────────────────────────────── */
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 36px;
+}
+
+.hero-tag {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  border: 0.5px solid var(--color-border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  letter-spacing: 0.04em;
+  transition: color 0.25s ease, border-color 0.25s ease;
+  cursor: default;
+}
+
+.hero-tag:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-accent-orange);
+}
+
+/* ── CTA buttons ───────────────────────────────────────────────────────────── */
+.hero-ctas {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Primary — solid accent fill */
+.hero-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-accent-orange);
+  color: var(--color-surface-primary);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 22px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.hero-btn-primary:hover {
+  background: var(--color-accent-cream);
+  color: var(--color-surface-primary);
+  transform: translateY(-1px);
+}
+
+.hero-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary — ghost / outlined */
+.hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  padding: 12px 22px;
+  border-radius: 8px;
+  border: 0.5px solid var(--color-border);
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.hero-btn-secondary:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-accent-orange);
+  transform: translateY(-1px);
+}
+
+.hero-btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* ── Social links ──────────────────────────────────────────────────────────── */
+.hero-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 0.5px solid var(--color-border);
+}
+
+.hero-social-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.hero-social-link:hover {
+  color: var(--color-accent-orange);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  /* When the page layout stacks to single column, the right rule isn't needed */
+  .hero-right-rule {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-ambient-letter {
+    font-size: 180px;
+    right: -10px;
+    bottom: -20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-ctas {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-socials {
+    gap: 14px;
+  }
+}
+
+/* ── Light theme overrides for Hero Section ────────────────────────────────── */
+[data-theme='light'] .hero-bg-grid {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.015) 1px, transparent 1px) !important;
+}
+
+[data-theme='light'] .hero-ambient-letter {
+  color: rgba(0, 0, 0, 0.012) !important;
+}
+
 
 

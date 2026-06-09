@@ -2,9 +2,83 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ArrowRight, Send, Settings, RotateCcw, X, Sliders } from 'lucide-react';
+import { ChevronDown, Settings, RotateCcw, X, Sliders } from 'lucide-react';
 import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
 import { InteractiveMap } from '@/app/components/canvas/InteractiveMap';
+
+// ─── SVG Icons (inline — zero external deps) ───────────────────────────────────
+function IconArrowRight() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
+
+function IconSend() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="22" y1="2" x2="11" y2="13" />
+      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+    </svg>
+  );
+}
+
+function IconMail() {
+  return (
+    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </svg>
+  );
+}
+
+function IconLinkedIn() {
+  return (
+    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
+      <rect x="2" y="9" width="4" height="12" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  );
+}
+
+function IconGitHub() {
+  return (
+    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
+    </svg>
+  );
+}
+
+const SKILLS = ["Python", "React.js", "Django", "Node.js", "MERN Stack", "PostgreSQL"];
+
+const SOCIAL_LINKS = [
+  {
+    label: "parasnegi783@gmail.com",
+    href: "mailto:parasnegi783@gmail.com",
+    icon: IconMail,
+    ariaLabel: "Send an email",
+  },
+  {
+    label: "LinkedIn",
+    href: "https://linkedin.com/in/parasnegi783",
+    icon: IconLinkedIn,
+    ariaLabel: "Visit LinkedIn profile",
+  },
+  {
+    label: "GitHub",
+    href: "https://github.com/parasnegi783",
+    icon: IconGitHub,
+    ariaLabel: "Visit GitHub profile",
+  },
+];
 
 interface LayoutSettings {
   textWidth: number; // Left column percentage
@@ -132,6 +206,15 @@ export function Hero() {
         }}
       />
 
+      {/* Background grid atmosphere */}
+      <div className="hero-bg-grid" aria-hidden="true" />
+
+      {/* Right-edge rule — matches the spider web canvas boundary */}
+      <div className="hero-right-rule" aria-hidden="true" />
+
+      {/* Large ambient letter in bg */}
+      <span className="hero-ambient-letter" aria-hidden="true">P</span>
+
       <div
         className="max-w-[1200px] w-full mx-auto px-6 md:px-20 z-10 grid md:grid-cols-2 items-center my-auto py-12 transition-all duration-300"
         style={{
@@ -143,7 +226,7 @@ export function Hero() {
       >
         {/* Left Column: Typography & CTAs */}
         <div
-          className="flex flex-col justify-center text-left"
+          className="flex flex-col justify-center text-left relative z-10"
           style={{
             transform: mounted
               ? `translate(${settings.textX}px, ${settings.textY}px) scale(${settings.textScale})`
@@ -151,118 +234,170 @@ export function Hero() {
             transformOrigin: 'left center',
           }}
         >
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-          >
-            <span className="text-accent-orange font-mono text-sm tracking-wider uppercase mb-3 block font-semibold">
-              Available for Opportunities
-            </span>
-          </motion.div>
-
-          <div className="relative inline-block">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+          <div className="hero-content">
+            {/* Status badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-              className="text-hero text-text-primary mb-4 tracking-tight cursor-pointer select-none hover:text-accent-orange transition-colors duration-300 relative z-10"
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="hero-status"
+              role="status"
+              aria-label="Availability status"
+            >
+              <span className="hero-status-pulse" aria-hidden="true" />
+              <span className="hero-status-text">Available for Opportunities</span>
+            </motion.div>
+
+            {/* Name block */}
+            <div 
+              className="relative inline-block hero-name-block cursor-pointer select-none"
               onClick={handleTitleClick}
               onMouseEnter={() => setIsTitleHovered(true)}
               onMouseLeave={() => setIsTitleHovered(false)}
               title="Triple click to open layout editor"
             >
-              Paras Negi
-            </motion.h1>
-
-            <AnimatePresence>
-              {isTitleHovered && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8, y: 15, x: '-50%' }}
-                  animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
-                  exit={{ opacity: 0, scale: 0.8, y: 15, x: '-50%' }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  style={{
-                    position: 'absolute',
-                    bottom: '100%',
-                    left: '50%',
-                    transformOrigin: 'bottom center',
-                    zIndex: 50,
-                  }}
-                  className="w-48 h-64 mb-4 rounded-2xl border-2 border-accent-orange overflow-hidden bg-surface-secondary shadow-2xl shadow-accent-orange/30 pointer-events-none"
-                >
-                  {/* Grid Lines Pattern */}
-                  <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none z-10" />
-                  <img
-                    src="/paras.jpg"
-                    alt="Paras Negi"
-                    className="w-full h-full object-cover filter contrast-[1.05] brightness-[0.95]"
-                  />
-                  {/* Vignette Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-            className="text-xl md:text-2xl text-accent-cream font-serif mb-5"
-          >
-            Full-Stack Developer
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.45, ease: 'easeOut' }}
-            className="text-text-secondary text-base md:text-lg mb-8 leading-relaxed max-w-xl"
-          >
-            I build elegant, high-performance web applications with robust backends and interactive user interfaces.
-            Explore my interactive skills web to see my technical toolkit in action.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-wrap gap-2 mb-8"
-          >
-            {['Python', 'React.js', 'Django', 'Node.js', 'MERN Stack'].map((tech) => (
-              <span
-                key={tech}
-                className="px-3 py-1 text-xs font-mono bg-surface-secondary text-text-secondary rounded-full border border-border"
+              <motion.h1 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
+                className="hero-name-first"
               >
-                {tech}
-              </span>
-            ))}
-          </motion.div>
+                Paras
+              </motion.h1>
+              <motion.span 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.25, ease: 'easeOut' }}
+                className="hero-name-last"
+                aria-label="Negi"
+              >
+                Negi
+              </motion.span>
 
-          {/* Action Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.75 }}
-            className="flex flex-wrap gap-4"
-          >
-            <button
-              onClick={() => scrollTo('#projects')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-accent-orange text-surface-primary rounded-xl hover:bg-accent-cream transition-all duration-300 font-medium text-sm hover:translate-y-[-2px] shadow-lg shadow-accent-orange/10"
-            >
-              <span>View My Work</span>
-              <ArrowRight size={16} />
-            </button>
+              <AnimatePresence>
+                {isTitleHovered && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8, y: 15, x: '-50%' }}
+                    animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
+                    exit={{ opacity: 0, scale: 0.8, y: 15, x: '-50%' }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    style={{
+                      position: 'absolute',
+                      bottom: '100%',
+                      left: '50%',
+                      transformOrigin: 'bottom center',
+                      zIndex: 50,
+                    }}
+                    className="w-48 h-64 mb-4 rounded-2xl border-2 border-accent-orange overflow-hidden bg-surface-secondary shadow-2xl shadow-accent-orange/30 pointer-events-none"
+                  >
+                    <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none z-10" />
+                    <img
+                      src="/paras.jpg"
+                      alt="Paras Negi"
+                      className="w-full h-full object-cover filter contrast-[1.05] brightness-[0.95]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-            <button
-              onClick={() => scrollTo('#contact')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-secondary text-text-primary border border-border hover:border-accent-orange hover:text-accent-orange transition-all duration-300 font-medium text-sm hover:translate-y-[-2px]"
+            {/* Role row */}
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35, ease: 'easeOut' }}
+              className="hero-role-row" 
+              aria-label="Role: Full-Stack Developer"
             >
-              <span>Get in Touch</span>
-              <Send size={14} />
-            </button>
-          </motion.div>
+              <span className="hero-role-line" aria-hidden="true" />
+              <span className="hero-role">Full-Stack Developer</span>
+            </motion.div>
+
+            {/* Bio */}
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.45, ease: 'easeOut' }}
+              className="hero-bio"
+            >
+              I build{" "}
+              <strong className="hero-bio-strong">
+                elegant, high-performance
+              </strong>{" "}
+              web applications with robust backends and interactive user interfaces
+              — from Django APIs to React frontends.
+            </motion.p>
+
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.55 }}
+              className="hero-divider" 
+              aria-hidden="true" 
+            />
+
+            {/* Skill chips */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="hero-tags" 
+              aria-label="Core technologies"
+            >
+              {SKILLS.map((skill) => (
+                <span key={skill} className="hero-tag">
+                  {skill}
+                </span>
+              ))}
+            </motion.div>
+
+            {/* CTA buttons */}
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="hero-ctas"
+            >
+              <button 
+                onClick={() => scrollTo('#projects')} 
+                className="hero-btn-primary cursor-pointer"
+              >
+                View My Work
+                <IconArrowRight />
+              </button>
+              <button 
+                onClick={() => scrollTo('#contact')} 
+                className="hero-btn-secondary cursor-pointer"
+              >
+                Get in Touch
+                <IconSend />
+              </button>
+            </motion.div>
+
+            {/* Social / contact links */}
+            <motion.nav 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="hero-socials" 
+              aria-label="Contact and social links"
+            >
+              {SOCIAL_LINKS.map(({ label, href, icon: Icon, ariaLabel }) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="hero-social-link"
+                  aria-label={ariaLabel}
+                  target={href.startsWith("http") ? "_blank" : undefined}
+                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                >
+                  <Icon />
+                  {label}
+                </a>
+              ))}
+            </motion.nav>
+          </div>
         </div>
 
         {/* Right Column: Interactive Map Container */}
