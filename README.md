@@ -1,100 +1,127 @@
-# Paras Negi Portfolio Website
+# Paras Negi — Portfolio
 
-A sophisticated, interactive portfolio website built with **Next.js 14**, featuring a Spider Web Canvas visualization, D3.js Force Graph, smooth GSAP animations, and a Claude-inspired dark design system.
+A premium, interactive portfolio website built with **Next.js 16**, featuring WebGL cursor effects, D3-style interactive skill maps, Framer Motion animations, and a warm alabaster + charcoal design system with full light/dark theme support.
+
+---
 
 ## 🚀 Tech Stack
 
-| Category | Technology |
-|----------|-----------|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript 5+ (strict mode) |
-| Styling | Tailwind CSS 4 + CSS Custom Properties |
-| Animations | GSAP 3 + ScrollTrigger, Framer Motion |
-| Visualizations | HTML5 Canvas API, D3.js v7 |
-| Smooth Scroll | Lenis |
-| Icons | Lucide React |
-| Fonts | DM Serif Display, DM Sans, JetBrains Mono |
-| Deployment | Vercel |
+| Category        | Technology                                    |
+| --------------- | --------------------------------------------- |
+| Framework       | Next.js 16 (App Router, Turbopack)            |
+| Language        | TypeScript 5+ (strict mode)                   |
+| Styling         | Tailwind CSS 4 + CSS Custom Properties        |
+| Animations      | Framer Motion, GSAP 3                         |
+| Visualizations  | HTML5 Canvas, Three.js (WebGL Tubes Cursor)   |
+| Smooth Scroll   | Lenis                                         |
+| Icons           | Lucide React                                  |
+| Fonts           | DM Serif Display, DM Sans, JetBrains Mono     |
+| Deployment      | Vercel                                        |
+
+---
 
 ## 📂 Project Structure
 
 ```
-app/
-├── layout.tsx              # Root layout with SEO metadata and fonts
-├── page.tsx                # Main portfolio page
-├── globals.css             # Design system + CSS custom properties
-├── sitemap.ts              # SEO sitemap
-├── robots.ts               # robots.txt configuration
-├── components/
-│   ├── sections/           # Page sections
-│   │   ├── Navbar.tsx      # Fixed nav with frosted glass effect
-│   │   ├── Hero.tsx        # Full-viewport hero with Spider Web Canvas
-│   │   ├── About.tsx       # 60/40 split layout with animated counters
-│   │   ├── Skills.tsx      # D3.js Force Graph visualization
-│   │   ├── Experience.tsx  # Animated vertical timeline
-│   │   ├── Projects.tsx    # Masonry card grid
-│   │   ├── Education.tsx   # Education cards + certification badges
-│   │   ├── Contact.tsx     # CTA with clipboard copy
-│   │   └── Footer.tsx      # Footer with scroll-to-top
-│   ├── canvas/             # Canvas visualizations
-│   │   ├── SpiderWebCanvas.tsx  # Interactive HTML5 Canvas
-│   │   └── ForceGraph.tsx       # D3.js physics simulation
-│   └── ui/                 # Reusable UI components
-│       ├── Card.tsx        # Dark surface card
-│       ├── Button.tsx      # Button variants
-│       ├── Toast.tsx       # Toast notifications
-│       └── Badge.tsx       # Pill-shaped tags
-└── lib/
-    ├── data/               # Content data files
-    │   ├── types.ts        # TypeScript interfaces
-    │   ├── projects.ts     # Project data
-    │   ├── experience.ts   # Work experience
-    │   ├── skills.ts       # Skills by category
-    │   └── education.ts    # Education + certifications
-    ├── hooks/              # Custom React hooks
-    │   ├── useSpiderWeb.ts    # Canvas physics logic
-    │   ├── useScrollPosition.ts
-    │   └── useSmoothScroll.ts
-    └── utils/
-        └── animation.ts    # GSAP helper functions
+portfolio-project/
+├── public/                     # Static assets
+│   └── paras.jpg               # Profile photograph
+│
+├── app/                        # Next.js App Router root
+│   ├── layout.tsx              # Root layout — fonts, SEO metadata, WebGL cursor
+│   ├── page.tsx                # Home page — assembles all sections
+│   ├── globals.css             # Design system tokens, section styles, theme overrides
+│   ├── sitemap.ts              # Dynamic sitemap for SEO
+│   ├── robots.ts               # robots.txt configuration
+│   ├── favicon.ico             # Browser tab icon
+│   │
+│   ├── components/
+│   │   ├── sections/           # Full-page section components (ordered top → bottom)
+│   │   │   ├── index.ts        # ← Barrel exports
+│   │   │   ├── Navbar.tsx      # Floating dock (desktop) + Liquid Nav (mobile)
+│   │   │   ├── Hero.tsx        # Full-viewport hero with cursor-following image
+│   │   │   ├── About.tsx       # Bio, animated counters, skills pills
+│   │   │   ├── Skills.tsx      # Interactive cog-wheel skill visualization
+│   │   │   ├── Experience.tsx  # Animated vertical timeline
+│   │   │   ├── Projects.tsx    # Featured + grid project cards
+│   │   │   ├── Education.tsx   # Education timeline + certification badges
+│   │   │   ├── Contact.tsx     # CTA with clipboard copy + social links
+│   │   │   └── Footer.tsx      # Footer with scroll-to-top
+│   │   │
+│   │   ├── canvas/             # Canvas & WebGL visualization components
+│   │   │   ├── index.ts        # ← Barrel exports
+│   │   │   ├── InteractiveMap.tsx  # SVG skill map with animated cog wheels
+│   │   │   └── TubesCursor.tsx     # Three.js WebGL tubes cursor effect
+│   │   │
+│   │   └── ui/                 # Reusable UI primitives
+│   │       ├── index.ts        # ← Barrel exports
+│   │       ├── Badge.tsx       # Pill-shaped status/tag badges
+│   │       ├── Button.tsx      # Button component with variants
+│   │       ├── Card.tsx        # Dark surface card container
+│   │       └── Toast.tsx       # Toast notification component
+│   │
+│   └── lib/
+│       ├── data/               # Typed content data (edit here to update site)
+│       │   ├── index.ts        # ← Barrel exports
+│       │   ├── types.ts        # TypeScript interfaces for all data models
+│       │   ├── projects.ts     # Project entries
+│       │   └── education.ts    # Education + certification entries
+│       │
+│       └── hooks/              # Custom React hooks
+│           ├── index.ts        # ← Barrel exports
+│           ├── useScrollPosition.ts  # Throttled scroll position tracker
+│           └── useSmoothScroll.ts    # Lenis singleton smooth scroll manager
+│
+├── package.json                # Dependencies and scripts
+├── tsconfig.json               # TypeScript configuration
+├── next.config.ts              # Next.js configuration
+├── eslint.config.mjs           # ESLint configuration
+├── postcss.config.mjs          # PostCSS (Tailwind) configuration
+├── AGENTS.md                   # AI agent coding guidelines
+└── README.md                   # ← You are here
 ```
+
+---
 
 ## 🎨 Design System
 
-### Colors
+### Color Tokens
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| Surface Primary | `#0d0d0c` | Main background |
-| Surface Secondary | `#1a1a18` | Cards, navbar |
-| Surface Tertiary | `#2a2a28` | Hover states |
-| Text Primary | `#f0ede6` | Main text |
-| Text Secondary | `#888884` | Muted text |
-| Accent Orange | `#e07040` | Links, highlights |
-| Accent Cream | `#c8b89a` | Decorative elements |
-| Border | `#3a3a38` | Subtle borders |
+| Token             | Dark Mode   | Light Mode  | Usage               |
+| ----------------- | ----------- | ----------- | ------------------- |
+| Surface Primary   | `#0d0d0c`   | `#FAF9F6`   | Page background     |
+| Surface Secondary | `#1a1a18`   | `#F3F1EB`   | Cards, navbar       |
+| Surface Tertiary  | `#2a2a28`   | `#E6E4DD`   | Hover states        |
+| Text Primary      | `#f0ede6`   | `#1C1B1A`   | Main text           |
+| Text Secondary    | `#888884`   | `#706F6A`   | Muted / helper text |
+| Accent Orange     | `#e07040`   | `#D95829`   | Links, highlights   |
+| Accent Cream      | `#c8b89a`   | `#B4A485`   | Decorative accents  |
+| Border            | `#3a3a38`   | `#E3DFD5`   | Subtle borders      |
 
 ### Typography
 
-| Element | Font | Size |
-|---------|------|------|
-| Hero H1 | DM Serif Display | `clamp(40px, 6vw, 80px)` |
-| Section H2 | DM Serif Display | `clamp(28px, 3.5vw, 48px)` |
-| Body | DM Sans 400 | 16px |
-| Code | JetBrains Mono | 14px |
+| Element    | Font              | Size                         |
+| ---------- | ----------------- | ---------------------------- |
+| Hero H1    | DM Serif Display  | `clamp(40px, 6vw, 80px)`    |
+| Section H2 | DM Serif Display  | `clamp(28px, 3.5vw, 48px)`  |
+| Body       | DM Sans 400       | 16px                         |
+| Code/Mono  | JetBrains Mono    | 14px                         |
+
+---
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
-- npm or yarn
+- npm
 
 ### Installation
 
 ```bash
 # Clone the repo
-git clone https://github.com/parasnegi783/portfolio.git
-cd portfolio
+git clone https://github.com/ritik328/paras-portfolio.git
+cd paras-portfolio
 
 # Install dependencies
 npm install
@@ -112,16 +139,21 @@ npm run build
 npm start
 ```
 
+---
+
 ## 📝 Updating Content
 
 All content is stored in typed data files under `app/lib/data/`:
 
-- **Projects**: Edit `projects.ts` — add/modify/remove projects
-- **Experience**: Edit `experience.ts` — update work history
-- **Skills**: Edit `skills.ts` — add skills with categories
-- **Education**: Edit `education.ts` — update degrees and certifications
+| File              | What to edit                         |
+| ----------------- | ------------------------------------ |
+| `projects.ts`     | Add, modify, or remove projects      |
+| `education.ts`    | Update degrees and certifications    |
+| `types.ts`        | Extend data models / interfaces      |
 
-Each file exports typed TypeScript arrays. After editing, rebuild the project.
+Each file exports typed TypeScript arrays. After editing, the site rebuilds automatically in dev mode.
+
+---
 
 ## ♿ Accessibility
 
@@ -130,22 +162,21 @@ Each file exports typed TypeScript arrays. After editing, rebuild the project.
 - ARIA labels on all interactive elements
 - Skip-to-content link
 - `prefers-reduced-motion` support
-- Semantic HTML structure
+- Semantic HTML5 structure
+
+---
 
 ## 🚀 Deployment
 
-Deploy to Vercel:
+The site auto-deploys to Vercel on push to `main`:
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel --prod
+# Or deploy manually
+npx vercel --prod
 ```
 
-Or connect the GitHub repository to Vercel for automatic deployments on push.
+---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE) for details.
