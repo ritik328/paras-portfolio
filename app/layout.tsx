@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { DM_Serif_Display, DM_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import { TubesCursor } from '@/app/components/canvas/TubesCursor';
 
 // DM Serif Display for hero and section headlines
 const dmSerifDisplay = DM_Serif_Display({
@@ -121,7 +122,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full antialiased overflow-x-hidden">{children}</body>
+      <body className="min-h-full antialiased overflow-x-hidden">
+        <TubesCursor />
+        {children}
+      </body>
     </html>
   );
 }
