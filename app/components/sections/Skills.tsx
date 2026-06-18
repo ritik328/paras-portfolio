@@ -77,17 +77,17 @@ const SKILL_NODES: SkillNode[] = [
 
   // Languages leaf nodes (squares)
   { id: 'lang-sql', label: 'SQL', x: 400, y: 80, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
-  { id: 'lang-java', label: 'Java', x: 340, y: 60, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
+  { id: 'lang-java', label: 'Java', x: 340, y: 60, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'bottom' },
   { id: 'lang-html', label: 'HTML / CSS', x: 280, y: 60, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
-  { id: 'lang-python', label: 'Python', x: 220, y: 80, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
+  { id: 'lang-python', label: 'Python', x: 220, y: 80, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'bottom' },
   { id: 'lang-cpp', label: 'C++', x: 160, y: 110, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
   { id: 'lang-js', label: 'JavaScript', x: 120, y: 160, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'left' },
 
   // Frameworks & APIs leaf nodes (squares)
   { id: 'fw-mulesoft', label: 'MuleSoft 4', x: 600, y: 80, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
-  { id: 'fw-nodejs', label: 'Node.js', x: 660, y: 60, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
+  { id: 'fw-nodejs', label: 'Node.js', x: 660, y: 60, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'bottom' },
   { id: 'fw-django', label: 'Django', x: 720, y: 60, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
-  { id: 'fw-react', label: 'React.js', x: 780, y: 80, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
+  { id: 'fw-react', label: 'React.js', x: 780, y: 80, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'bottom' },
   { id: 'fw-express', label: 'Express.js', x: 840, y: 110, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
   { id: 'fw-rest', label: 'REST APIs', x: 880, y: 160, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'right' },
   { id: 'fw-apis', label: 'Workday / Okta APIs', x: 890, y: 220, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'right' },
@@ -98,14 +98,14 @@ const SKILL_NODES: SkillNode[] = [
   { id: 'tool-git', label: 'Git & Docker', x: 120, y: 440, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
   { id: 'tool-cloudhub', label: 'CloudHub 2.0', x: 160, y: 490, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
   { id: 'tool-postman', label: 'Postman', x: 220, y: 520, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
-  { id: 'tool-vscode', label: 'VS Code', x: 280, y: 540, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
+  { id: 'tool-vscode', label: 'VS Code', x: 280, y: 540, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'top' },
   { id: 'tool-objectstore', label: 'Anypoint ObjectStore', x: 340, y: 540, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
-  { id: 'tool-oracle', label: 'Oracle', x: 400, y: 520, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
+  { id: 'tool-oracle', label: 'Oracle', x: 400, y: 520, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'top' },
 
   // AI & Automation leaf nodes (circles)
-  { id: 'ai-glean', label: 'Glean AI (MCP)', x: 600, y: 520, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
+  { id: 'ai-glean', label: 'Glean AI (MCP)', x: 600, y: 520, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'top' },
   { id: 'ai-chatgpt', label: 'ChatGPT', x: 660, y: 540, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
-  { id: 'ai-zapier', label: 'Zapier (admin)', x: 720, y: 540, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
+  { id: 'ai-zapier', label: 'Zapier (admin)', x: 720, y: 540, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'top' },
   { id: 'ai-claude', label: 'Claude AI (agents/MCP)', x: 780, y: 520, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
   { id: 'ai-apis', label: 'Slack & Box APIs', x: 840, y: 490, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'right' },
   { id: 'ai-notion', label: 'Notion AI', x: 880, y: 440, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'right' },
