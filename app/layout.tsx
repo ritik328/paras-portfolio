@@ -28,17 +28,20 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Paras Negi | Full-Stack Developer Portfolio',
+  title: 'Paras Negi | Enterprise Integration & Full-Stack Developer Portfolio',
   description:
-    'Full-Stack Developer specializing in Python, React.js, Django, Node.js, and MERN Stack. View projects, experience, and skills.',
+    'Enterprise Integration & Full-Stack Developer specializing in MuleSoft 4, Python, Claude AI, Glean AI, React.js, and enterprise API design.',
   keywords: [
     'Paras Negi',
+    'Enterprise Integration Engineer',
     'Full-Stack Developer',
+    'MuleSoft 4',
+    'Python',
+    'Glean AI',
+    'Claude AI',
+    'REST APIs',
     'React.js',
     'Django',
-    'Node.js',
-    'Python',
-    'MERN Stack',
     'Portfolio',
   ],
   authors: [{ name: 'Paras Negi' }],
@@ -47,16 +50,16 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://parasnegi.vercel.app',
-    title: 'Paras Negi | Full-Stack Developer Portfolio',
+    title: 'Paras Negi | Enterprise Integration & Full-Stack Developer Portfolio',
     description:
-      'Full-Stack Developer specializing in Python, React.js, Django, Node.js, and MERN Stack. View projects, experience, and skills.',
+      'Enterprise Integration & Full-Stack Developer specializing in MuleSoft 4, Python, Claude AI, Glean AI, React.js, and enterprise API design.',
     siteName: 'Paras Negi Portfolio',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Paras Negi | Full-Stack Developer Portfolio',
+    title: 'Paras Negi | Enterprise Integration & Full-Stack Developer Portfolio',
     description:
-      'Full-Stack Developer specializing in Python, React.js, Django, Node.js, and MERN Stack.',
+      'Enterprise Integration & Full-Stack Developer specializing in MuleSoft 4, Python, Claude AI, Glean AI, React.js, and enterprise API design.',
     creator: '@parasnegi783',
   },
   robots: {
@@ -100,23 +103,24 @@ export default function RootLayout({
               name: 'Paras Negi',
               url: 'https://parasnegi.vercel.app',
               email: 'parasnegi783@gmail.com',
-              jobTitle: 'Full-Stack Developer',
+              jobTitle: 'Enterprise Integration & Full-Stack Developer',
               alumniOf: {
                 '@type': 'CollegeOrUniversity',
                 name: 'Amritsar Group of Colleges',
               },
               knowsAbout: [
-                'React.js',
-                'Node.js',
-                'Django',
+                'MuleSoft 4',
                 'Python',
-                'JavaScript',
-                'MongoDB',
-                'MySQL',
+                'Glean AI',
+                'Claude AI',
+                'React.js',
+                'Django',
+                'REST APIs',
+                'Enterprise Integrations',
               ],
               sameAs: [
                 'https://github.com/parasnegi783',
-                'https://linkedin.com/in/parasnegi783',
+                'https://www.linkedin.com/in/paras-negi7/',
               ],
             }),
           }}

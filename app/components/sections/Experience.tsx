@@ -5,6 +5,34 @@
 const EXPERIENCES = [
   {
     index: "01",
+    role: "Enterprise Integration Engineer Intern",
+    company: "Rubrik, Inc.",
+    type: "Enterprise Cloud Security",
+    period: "Aug 2025 — Present",
+    summary:
+      "Building internal automation platforms, AI-integrated workflows, and enterprise REST APIs. Administering Zapier and Glean AI platforms and building custom Claude AI agents.",
+    bullets: [
+      "Administered Zapier and Glean AI platforms for the engineering org to configure AI agents and onboard teams",
+      "Built custom Claude AI agents to automate dev tasks, including a MuleSoft metadata to Confluence documentation generator",
+      "Developed Slack-Jira automation bots (Facilities Request Router and CPQ Responder) using Glean's MCP server over Streamable HTTP with bidirectional thread sync",
+      "Designed a Team Productivity Analytics Platform with dashboards for a 100+ person IT org, reducing JVM heap footprint by 69% (85MB to 26MB)",
+      "Built a SOX Compliance Audit Automation suite traversing Anypoint org trees via Management APIs, eliminating 15+ hours of manual quarterly effort",
+      "Developed high-performance backend integrations including Okta Worker Data API (RFC 5988 pagination) and Salesforce-LinkedIn Conversions API"
+    ],
+    tags: [
+      "MuleSoft 4",
+      "Python",
+      "Claude AI (MCP)",
+      "Glean AI",
+      "Anypoint MQ",
+      "Jira API",
+      "Workday API",
+      "Okta API",
+      "CloudHub 2.0"
+    ],
+  },
+  {
+    index: "02",
     role: "Summer Intern",
     company: "Bharat Electronics Limited (BEL)",
     type: "Defence PSU",
@@ -20,7 +48,7 @@ const EXPERIENCES = [
     tags: ["Django", "Tailwind CSS", "Python", "HTML / CSS", "Notion AI", "Team Lead"],
   },
   {
-    index: "02",
+    index: "03",
     role: "Trainee Developer",
     company: "Evon Technologies",
     type: "Software Agency",

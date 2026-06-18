@@ -93,10 +93,10 @@ export function About() {
               className="about-bio"
             >
               <p className="about-bio-p">
-                I'm a passionate Full-Stack Developer currently pursuing <strong className="font-semibold">B.Tech in Computer Science</strong> at Amritsar Group of Colleges. My journey spans the full stack — from crafting pixel-perfect frontends with React.js to building robust backends with Django and Node.js.
+                I'm a Computer Science graduate from <strong className="font-semibold">Amritsar Group of Colleges</strong> with 10 months of production experience building internal automation platforms, AI-integrated workflows, and enterprise REST APIs at Rubrik.
               </p>
               <p className="about-bio-p">
-                I've explored the world of <strong className="font-semibold">AI tools</strong> and how they can supercharge developer productivity — integrating Claude AI, ChatGPT, and Notion AI into real workflows. When I'm not coding, I'm contributing to open-source projects and staying ahead of the ever-evolving tech landscape.
+                I build custom Claude AI agents and integrations using Glean's Model Context Protocol (MCP) servers, alongside Zapier automation workflows, to drive engineering productivity. I'm highly motivated by developer experience, cloud-native backend tooling, and robust integrations.
               </p>
             </motion.div>
 
@@ -179,11 +179,11 @@ export function About() {
               className="about-card"
             >
               <div className="about-card-eyebrow">Currently At</div>
-              <h3 className="about-card-title">Amritsar Group of Colleges</h3>
-              <p className="about-card-desc">B.Tech CSE · 2022 — 2026</p>
-              <div className="about-card-badge" role="status" aria-label="Enrollment status">
+              <h3 className="about-card-title">Rubrik, Inc.</h3>
+              <p className="about-card-desc">Enterprise Integration Engineer Intern</p>
+              <div className="about-card-badge" role="status" aria-label="Employment status">
                 <span className="about-card-badge-dot" aria-hidden="true" />
-                <span>Enrolled · Final Year</span>
+                <span>Active Intern</span>
               </div>
             </motion.div>
           </div>

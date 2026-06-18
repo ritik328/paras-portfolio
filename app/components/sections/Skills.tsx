@@ -43,7 +43,7 @@ const SKILL_NODES: SkillNode[] = [
   },
   {
     id: 'frameworks',
-    label: 'Frameworks',
+    label: 'Frameworks & APIs',
     num: 2,
     x: 680,
     y: 190,
@@ -65,7 +65,7 @@ const SKILL_NODES: SkillNode[] = [
   },
   {
     id: 'ai',
-    label: 'AI Tools',
+    label: 'AI & Automation',
     num: 4,
     x: 680,
     y: 410,
@@ -78,38 +78,36 @@ const SKILL_NODES: SkillNode[] = [
   // Languages leaf nodes (squares)
   { id: 'lang-sql', label: 'SQL', x: 400, y: 80, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
   { id: 'lang-java', label: 'Java', x: 340, y: 60, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
-  { id: 'lang-html', label: 'HTML', x: 280, y: 60, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
+  { id: 'lang-html', label: 'HTML / CSS', x: 280, y: 60, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
   { id: 'lang-python', label: 'Python', x: 220, y: 80, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
   { id: 'lang-cpp', label: 'C++', x: 160, y: 110, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'top' },
   { id: 'lang-js', label: 'JavaScript', x: 120, y: 160, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'left' },
-  { id: 'lang-css', label: 'CSS', x: 110, y: 220, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'left' },
-  { id: 'lang-c', label: 'C', x: 130, y: 280, shape: 'square', group: 'languages', catColor: '#e07040', labelPos: 'left' },
 
-  // Frameworks leaf nodes (squares)
-  { id: 'fw-wordpress', label: 'WordPress', x: 600, y: 80, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
+  // Frameworks & APIs leaf nodes (squares)
+  { id: 'fw-mulesoft', label: 'MuleSoft 4', x: 600, y: 80, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
   { id: 'fw-nodejs', label: 'Node.js', x: 660, y: 60, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
   { id: 'fw-django', label: 'Django', x: 720, y: 60, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
   { id: 'fw-react', label: 'React.js', x: 780, y: 80, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
   { id: 'fw-express', label: 'Express.js', x: 840, y: 110, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'top' },
-  { id: 'fw-tailwind', label: 'Tailwind', x: 880, y: 160, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'right' },
-  { id: 'fw-bootstrap', label: 'Bootstrap', x: 890, y: 220, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'right' },
+  { id: 'fw-rest', label: 'REST APIs', x: 880, y: 160, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'right' },
+  { id: 'fw-apis', label: 'Workday / Okta APIs', x: 890, y: 220, shape: 'square', group: 'frameworks', catColor: '#5a9fd4', labelPos: 'right' },
 
   // Tools & DBs leaf nodes (triangles)
   { id: 'tool-mongodb', label: 'MongoDB', x: 130, y: 320, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
   { id: 'tool-mysql', label: 'MySQL', x: 110, y: 380, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
-  { id: 'tool-git', label: 'Git', x: 120, y: 440, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
-  { id: 'tool-github', label: 'GitHub', x: 160, y: 490, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
+  { id: 'tool-git', label: 'Git & Docker', x: 120, y: 440, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
+  { id: 'tool-cloudhub', label: 'CloudHub 2.0', x: 160, y: 490, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'left' },
   { id: 'tool-postman', label: 'Postman', x: 220, y: 520, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
   { id: 'tool-vscode', label: 'VS Code', x: 280, y: 540, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
-  { id: 'tool-hadoop', label: 'Hadoop', x: 340, y: 540, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
+  { id: 'tool-objectstore', label: 'Anypoint ObjectStore', x: 340, y: 540, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
   { id: 'tool-oracle', label: 'Oracle', x: 400, y: 520, shape: 'triangle', group: 'tools', catColor: '#70b894', labelPos: 'bottom' },
 
-  // AI Tools leaf nodes (circles)
-  { id: 'ai-copilot', label: 'GitHub Copilot', x: 600, y: 520, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
+  // AI & Automation leaf nodes (circles)
+  { id: 'ai-glean', label: 'Glean AI (MCP)', x: 600, y: 520, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
   { id: 'ai-chatgpt', label: 'ChatGPT', x: 660, y: 540, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
-  { id: 'ai-gemini', label: 'Gemini', x: 720, y: 540, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
-  { id: 'ai-claude', label: 'Claude AI', x: 780, y: 520, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
-  { id: 'ai-dalle', label: 'DALL·E', x: 840, y: 490, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'right' },
+  { id: 'ai-zapier', label: 'Zapier (admin)', x: 720, y: 540, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
+  { id: 'ai-claude', label: 'Claude AI (agents/MCP)', x: 780, y: 520, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'bottom' },
+  { id: 'ai-apis', label: 'Slack & Box APIs', x: 840, y: 490, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'right' },
   { id: 'ai-notion', label: 'Notion AI', x: 880, y: 440, shape: 'circle', group: 'ai', catColor: '#b47ed4', labelPos: 'right' },
 ];
 

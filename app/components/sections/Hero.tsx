@@ -57,7 +57,7 @@ function IconGitHub() {
   );
 }
 
-const SKILLS = ["Python", "React.js", "Django", "Node.js", "MERN Stack", "PostgreSQL"];
+const SKILLS = ["MuleSoft 4", "Claude AI", "Python", "React.js", "Django", "REST APIs"];
 
 const SOCIAL_LINKS = [
   {
@@ -68,7 +68,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: "LinkedIn",
-    href: "https://linkedin.com/in/parasnegi783",
+    href: "https://www.linkedin.com/in/paras-negi7/",
     icon: IconLinkedIn,
     ariaLabel: "Visit LinkedIn profile",
   },
@@ -320,10 +320,9 @@ export function Hero() {
             >
               I build{" "}
               <strong className="hero-bio-strong">
-                elegant, high-performance
+                internal automation platforms, AI workflows, and enterprise APIs
               </strong>{" "}
-              web applications with robust backends and interactive user interfaces
-              — from Django APIs to React frontends.
+              — specializing in MuleSoft, Python, and cloud-native integrations.
             </motion.p>
 
             <motion.div 

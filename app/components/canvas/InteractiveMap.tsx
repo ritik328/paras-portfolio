@@ -167,7 +167,7 @@ const NODES: Node[] = [
   },
   {
     id: 'mysql',
-    label: 'MySQL',
+    label: 'MuleSoft 4',
     x: 110,
     y: 330,
     shape: 'triangle',
@@ -177,7 +177,7 @@ const NODES: Node[] = [
   },
   {
     id: 'git',
-    label: 'Git & Docker',
+    label: 'Git & CloudHub',
     x: 250,
     y: 440,
     shape: 'triangle',
@@ -207,12 +207,12 @@ const NODES: Node[] = [
     labelPos: 'right',
   },
   {
-    id: 'ai',
-    label: 'AI Tools',
+    id: 'rubrik',
+    label: 'Rubrik Intern',
     x: 550,
     y: 440,
     shape: 'circle',
-    target: '#skills',
+    target: '#experience',
     group: 'experience',
     labelPos: 'bottom',
   },
@@ -244,7 +244,7 @@ const CONNECTIONS: Connection[] = [
   // Experience Branch to Leaves (Dashed for visual style)
   { from: 'experience', to: 'bel', path: 'M 550 340 L 590 340 L 650 400', dashed: true },
   { from: 'experience', to: 'evon', path: 'M 550 340 L 620 340 L 630 330 L 690 330', dashed: true },
-  { from: 'experience', to: 'ai', path: 'M 550 340 L 550 440', dashed: true },
+  { from: 'experience', to: 'rubrik', path: 'M 550 340 L 550 440', dashed: true },
 ];
 
 export function InteractiveMap() {

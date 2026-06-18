@@ -23,7 +23,7 @@ export function Footer() {
       <div className="max-w-[1200px] mx-auto px-20 max-md:px-6 py-8 flex justify-between items-center">
         <div>
           <p className="text-[#888884] text-sm">
-            © 2024 Paras Negi. All rights reserved.
+            © {new Date().getFullYear()} Paras Negi. All rights reserved.
           </p>
           <p className="text-[#3a3a38] text-xs mt-1">
             Built with Next.js · GSAP · D3.js · Framer Motion
