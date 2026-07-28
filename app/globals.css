@@ -2595,9 +2595,485 @@ body {
   overflow: hidden;
 }
 
+/* ==========================================================================
+   Experience Section — Lateral Pin Animation
+   ========================================================================== */
 
+.exp-section {
+  position: relative;
+  background-color: var(--color-surface-primary);
+  padding: 120px 0 0;
+  overflow: hidden;
+}
 
+/* Dot-grid atmosphere */
+.exp-bg {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(224, 112, 64, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
 
+/* ── Section Header ────────────────────────────────────────────────────────── */
+.exp-header {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 80px 64px;
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.exp-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent-orange);
+}
+
+.exp-title {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+  font-family: var(--font-display, serif);
+}
+
+.exp-title em {
+  font-style: italic;
+  color: var(--color-accent-orange);
+}
+
+.exp-count {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.06em;
+  margin-left: auto;
+}
+
+/* ── Lateral Layout ─────────────────────────────────────────────────────────── */
+.exp-layout {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 80px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 0 64px;
+  align-items: stretch; /* CRITICAL: allows sticky to work in grid */
+}
+
+/* Sticky wrapper: spans full grid row height, giving sidebar room to stick */
+.exp-sidebar-wrap {
+  position: relative; /* establishes stacking context for sticky child */
+}
+
+/* Left Sidebar — GSAP ScrollTrigger will pin this with fixed positioning */
+.exp-sidebar {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding-top: 12px;
+  width: 320px; /* match grid column width so fixed pin has right dimensions */
+  padding-top: 88px; /* top clearance matching navbar */
+  box-sizing: border-box;
+}
+
+.exp-track {
+  position: relative;
+  width: 2px;
+  flex-shrink: 0;
+  background: var(--color-border);
+  border-radius: 2px;
+  align-self: stretch;
+  min-height: 200px;
+}
+
+.exp-indicator-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 80px;
+  background: var(--color-accent-orange);
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(224, 112, 64, 0.6), 0 0 30px rgba(224, 112, 64, 0.25);
+}
+
+/* ── Nav Items ─────────────────────────────────────────────────────────────── */
+.exp-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.exp-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.exp-nav-item:hover {
+  background: rgba(224, 112, 64, 0.06);
+}
+
+.exp-nav-item.is-active {
+  background: rgba(224, 112, 64, 0.08);
+}
+
+.exp-nav-index {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  transition: color 0.3s;
+}
+
+.exp-nav-item.is-active .exp-nav-index {
+  color: var(--color-accent-orange);
+}
+
+.exp-nav-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.exp-nav-company {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s;
+}
+
+.exp-nav-item.is-active .exp-nav-company {
+  color: var(--color-text-primary);
+}
+
+.exp-nav-role {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.exp-nav-item.is-active .exp-nav-role {
+  opacity: 1;
+  color: var(--color-accent-cream);
+}
+
+.exp-nav-live {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.exp-nav-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: exp-pulse 2s infinite;
+}
+
+@keyframes exp-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 5px rgba(74, 222, 128, 0); }
+}
+
+/* ── Right Panels ──────────────────────────────────────────────────────────── */
+.exp-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 120px;
+}
+
+.exp-panel {
+  padding: 56px 0 80px;
+  border-bottom: 1px solid var(--color-border);
+  opacity: 0;
+}
+
+.exp-panel:last-child {
+  border-bottom: none;
+}
+
+.exp-panel-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.exp-panel-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-accent-orange);
+}
+
+.exp-panel-period {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+}
+
+.exp-panel-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(74, 222, 128, 0.08);
+  border: 0.5px solid rgba(74, 222, 128, 0.25);
+  font-size: 10px;
+  font-weight: 600;
+  color: #4ade80;
+  letter-spacing: 0.05em;
+}
+
+.exp-panel-live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: exp-pulse 2s infinite;
+}
+
+.exp-panel-hero {
+  margin-bottom: 24px;
+}
+
+.exp-panel-role {
+  font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  margin-bottom: 10px;
+  font-family: var(--font-display, serif);
+}
+
+.exp-panel-company-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.exp-panel-company {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-accent-orange);
+}
+
+.exp-panel-sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.exp-panel-type {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.exp-panel-divider {
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-accent-orange) 0%, transparent 60%);
+  margin-bottom: 24px;
+  opacity: 0.35;
+}
+
+.exp-panel-summary {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+  margin-bottom: 28px;
+  max-width: 640px;
+}
+
+.exp-panel-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exp-bullet {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  opacity: 0;
+}
+
+.exp-bullet-arrow {
+  font-size: 16px;
+  color: var(--color-accent-orange);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.exp-bullet-text {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--color-text-primary);
+}
+
+.exp-panel-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exp-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 0.5px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-accent-cream);
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.exp-tag:hover {
+  border-color: var(--color-accent-orange);
+  background: rgba(224, 112, 64, 0.06);
+}
+
+/* ── Light theme overrides ──────────────────────────────────────────────────── */
+[data-theme='light'] .exp-bg {
+  background-image: radial-gradient(circle, rgba(217, 88, 41, 0.04) 1px, transparent 1px);
+}
+
+[data-theme='light'] .exp-indicator-bar {
+  box-shadow: 0 0 10px rgba(217, 88, 41, 0.5), 0 0 24px rgba(217, 88, 41, 0.2);
+}
+
+[data-theme='light'] .exp-tag {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+[data-theme='light'] .exp-panel-divider {
+  background: linear-gradient(90deg, var(--color-accent-orange) 0%, transparent 60%);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .exp-layout {
+    grid-template-columns: 260px 1fr;
+    gap: 0 40px;
+    padding: 0 40px;
+  }
+  .exp-header {
+    padding: 0 40px 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .exp-section {
+    padding: 80px 0 0;
+  }
+  .exp-layout {
+    grid-template-columns: 1fr;
+    padding: 0 24px;
+  }
+  .exp-header {
+    padding: 0 24px 40px;
+  }
+  .exp-sidebar {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .exp-track {
+    display: none;
+  }
+  .exp-nav {
+    flex-direction: row;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .exp-nav-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 10px 14px;
+    white-space: nowrap;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+  .exp-nav-item.is-active {
+    border-color: var(--color-accent-orange);
+  }
+  .exp-nav-role {
+    display: none;
+  }
+  .exp-panels {
+    padding-bottom: 60px;
+  }
+  .exp-panel {
+    padding: 40px 0 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .exp-layout {
+    padding: 0 20px;
+  }
+  .exp-header {
+    padding: 0 20px 32px;
+  }
+  .exp-panel-role {
+    font-size: 1.2rem;
+  }
+}
 
 
 

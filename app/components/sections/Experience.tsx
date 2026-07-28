@@ -1,14 +1,16 @@
 "use client";
 
-// ─── Data ──────────────────────────────────────────────────────────────────────
-// Edit this array to update your experience entries.
+import { useEffect, useRef } from "react";
+
+// --- Data ----------------------------------------------------------------------
 const EXPERIENCES = [
   {
     index: "01",
     role: "Enterprise Integration Engineer Intern",
     company: "Rubrik, Inc.",
     type: "Enterprise Cloud Security",
-    period: "Aug 2025 — Present",
+    period: "Aug 2025 - Present",
+    status: "active",
     summary:
       "Building internal automation platforms, AI-integrated workflows, and enterprise REST APIs. Administering Zapier and Glean AI platforms and building custom Claude AI agents.",
     bullets: [
@@ -17,7 +19,7 @@ const EXPERIENCES = [
       "Developed Slack-Jira automation bots (Facilities Request Router and CPQ Responder) using Glean's MCP server over Streamable HTTP with bidirectional thread sync",
       "Designed a Team Productivity Analytics Platform with dashboards for a 100+ person IT org, reducing JVM heap footprint by 69% (85MB to 26MB)",
       "Built a SOX Compliance Audit Automation suite traversing Anypoint org trees via Management APIs, eliminating 15+ hours of manual quarterly effort",
-      "Developed high-performance backend integrations including Okta Worker Data API (RFC 5988 pagination) and Salesforce-LinkedIn Conversions API"
+      "Developed high-performance backend integrations including Okta Worker Data API (RFC 5988 pagination) and Salesforce-LinkedIn Conversions API",
     ],
     tags: [
       "MuleSoft 4",
@@ -28,7 +30,7 @@ const EXPERIENCES = [
       "Jira API",
       "Workday API",
       "Okta API",
-      "CloudHub 2.0"
+      "CloudHub 2.0",
     ],
   },
   {
@@ -36,7 +38,8 @@ const EXPERIENCES = [
     role: "Summer Intern",
     company: "Bharat Electronics Limited (BEL)",
     type: "Defence PSU",
-    period: "Jun 2024 — Jul 2024",
+    period: "Jun 2024 - Jul 2024",
+    status: "past",
     summary:
       "Led full-stack development of BEL's homepage using Django and Tailwind CSS. Developed multilingual site features, dynamic navigation menus, and a secure admin panel.",
     bullets: [
@@ -52,7 +55,8 @@ const EXPERIENCES = [
     role: "Trainee Developer",
     company: "Evon Technologies",
     type: "Software Agency",
-    period: "Jun 2024 — Jul 2024",
+    period: "Jun 2024 - Jul 2024",
+    status: "past",
     summary:
       "Developed full-stack web applications using the MERN stack and gained hands-on experience in agile development practices and RESTful API design.",
     bullets: [
@@ -65,82 +69,239 @@ const EXPERIENCES = [
   },
 ];
 
-// ─── Component ─────────────────────────────────────────────────────────────────
+// --- Component -----------------------------------------------------------------
 export function Experience() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const panelsRef = useRef<HTMLDivElement>(null);
+  const indicatorBarRef = useRef<HTMLDivElement>(null);
+  const navItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const activeIndexRef = useRef(0);
+
+  useEffect(() => {
+    let ctx: { revert: () => void } | null = null;
+
+    const init = async () => {
+      try {
+        const gsap = (await import("gsap")).default;
+        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+        gsap.registerPlugin(ScrollTrigger);
+
+        const section = sectionRef.current;
+        const panels = panelsRef.current;
+        const bar = indicatorBarRef.current;
+        if (!section || !panels || !bar) return;
+
+        const panelEls = panels.querySelectorAll<HTMLElement>(".exp-panel");
+
+        // Helper: update left nav highlight + indicator bar
+        const setActive = (index: number) => {
+          activeIndexRef.current = index;
+
+          navItemRefs.current.forEach((btn, i) => {
+            if (!btn) return;
+            btn.classList.toggle("is-active", i === index);
+          });
+
+          const activeBtn = navItemRefs.current[index];
+          if (activeBtn && bar) {
+            const btnTop = activeBtn.offsetTop;
+            const btnHeight = activeBtn.offsetHeight;
+            gsap.to(bar, {
+              top: btnTop,
+              height: btnHeight,
+              duration: 0.45,
+              ease: "power3.out",
+            });
+          }
+        };
+
+        setActive(0);
+
+        ctx = gsap.context(() => {
+          // Pin sidebar using fixed positioning — works even with overflow:hidden on html/body
+          if (sidebarRef.current) {
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top top",
+              end: () => `bottom bottom`,
+              pin: sidebarRef.current,
+              pinType: "fixed",
+              pinSpacing: false,
+            });
+          }
+
+          panelEls.forEach((panel, i) => {
+            gsap.fromTo(
+              panel,
+              { opacity: 0, y: 48 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                ease: "power2.out",
+                scrollTrigger: {
+                  trigger: panel,
+                  start: "top 80%",
+                  once: true,
+                },
+              }
+            );
+
+            ScrollTrigger.create({
+              trigger: panel,
+              start: "top 45%",
+              end: "bottom 45%",
+              onEnter: () => setActive(i),
+              onEnterBack: () => setActive(i),
+            });
+
+            const bullets = panel.querySelectorAll(".exp-bullet");
+            gsap.fromTo(
+              bullets,
+              { opacity: 0, x: -16 },
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.5,
+                stagger: 0.08,
+                ease: "power2.out",
+                scrollTrigger: {
+                  trigger: panel,
+                  start: "top 70%",
+                  once: true,
+                },
+              }
+            );
+
+            const tags = panel.querySelectorAll(".exp-tag");
+            gsap.fromTo(
+              tags,
+              { opacity: 0, scale: 0.85 },
+              {
+                opacity: 1,
+                scale: 1,
+                duration: 0.4,
+                stagger: 0.05,
+                ease: "back.out(1.5)",
+                scrollTrigger: {
+                  trigger: panel,
+                  start: "top 65%",
+                  once: true,
+                },
+              }
+            );
+          });
+        }, section);
+      } catch (err) {
+        console.error("GSAP Experience init error:", err);
+      }
+    };
+
+    init();
+    return () => ctx?.revert();
+  }, []);
+
+  const scrollToPanel = (index: number) => {
+    const panels = panelsRef.current?.querySelectorAll<HTMLElement>(".exp-panel");
+    if (!panels) return;
+    panels[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   return (
-    <section id="experience" className="exp-section">
-      {/* Dot-grid atmosphere */}
+    <section id="experience" ref={sectionRef} className="exp-section">
       <div className="exp-bg" aria-hidden="true" />
 
-      {/* Header */}
       <div className="exp-header">
         <p className="exp-eyebrow">Career Path</p>
         <h2 className="exp-title">
           Work <em>Experience</em>
         </h2>
-        <p className="exp-count">{EXPERIENCES.length.toString().padStart(2, "0")} positions · 2024</p>
+        <p className="exp-count">
+          {EXPERIENCES.length.toString().padStart(2, "0")} positions - 2024
+        </p>
       </div>
 
-      {/* Timeline list */}
-      <ol className="exp-list">
-        {EXPERIENCES.map((exp, i) => (
-          <li key={exp.index} className="exp-item">
-            {/* Left index column */}
-            <div className="exp-index-col" aria-hidden="true">
-              <span className="exp-num">{exp.index}</span>
-              <span className="exp-dot" />
-              {i < EXPERIENCES.length - 1 && <span className="exp-vline" />}
+      <div className="exp-layout">
+        {/* Left: GSAP-pinned sidebar */}
+        <div className="exp-sidebar-wrap">
+          <div ref={sidebarRef} className="exp-sidebar">
+            <div className="exp-track">
+              <div ref={indicatorBarRef} className="exp-indicator-bar" />
             </div>
+            <nav className="exp-nav" aria-label="Experience navigation">
+              {EXPERIENCES.map((exp, i) => (
+                <button
+                  key={exp.index}
+                  ref={(el) => { navItemRefs.current[i] = el; }}
+                  className="exp-nav-item"
+                  onClick={() => scrollToPanel(i)}
+                  aria-label={`Jump to ${exp.company}`}
+                >
+                  <span className="exp-nav-index">{exp.index}</span>
+                  <span className="exp-nav-content">
+                    <span className="exp-nav-company">{exp.company}</span>
+                    <span className="exp-nav-role">{exp.role}</span>
+                  </span>
+                  {exp.status === "active" && (
+                    <span className="exp-nav-live" aria-label="Currently active">
+                      <span className="exp-nav-live-dot" />
+                    </span>
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
 
-            {/* Card */}
-            <article className="exp-card">
-              {/* Top row: role + date */}
-              <div className="exp-card-top">
-                <h3 className="exp-role">{exp.role}</h3>
-                <div className="exp-date-badge">
-                  <span className="exp-date-dot" aria-hidden="true" />
-                  <time className="exp-date">{exp.period}</time>
+        {/* Right scrollable panels */}
+        <div ref={panelsRef} className="exp-panels">
+          {EXPERIENCES.map((exp, i) => (
+            <article key={exp.index} className="exp-panel" data-index={i}>
+              <div className="exp-panel-topbar">
+                <div className="exp-panel-num">{exp.index}</div>
+                <div className="exp-panel-period">
+                  {exp.status === "active" && (
+                    <span className="exp-panel-live">
+                      <span className="exp-panel-live-dot" />
+                      Active
+                    </span>
+                  )}
+                  <time>{exp.period}</time>
                 </div>
               </div>
 
-              {/* Company + type */}
-              <div className="exp-company-row">
-                <span className="exp-company">{exp.company}</span>
-                <span className="exp-company-sep" aria-hidden="true" />
-                <span className="exp-type">{exp.type}</span>
+              <div className="exp-panel-hero">
+                <h3 className="exp-panel-role">{exp.role}</h3>
+                <div className="exp-panel-company-row">
+                  <span className="exp-panel-company">{exp.company}</span>
+                  <span className="exp-panel-sep" aria-hidden="true" />
+                  <span className="exp-panel-type">{exp.type}</span>
+                </div>
               </div>
 
-              {/* Divider */}
-              <div className="exp-divider" aria-hidden="true" />
+              <div className="exp-panel-divider" aria-hidden="true" />
 
-              {/* Summary */}
-              <p className="exp-summary">{exp.summary}</p>
+              <p className="exp-panel-summary">{exp.summary}</p>
 
-              {/* Bullet points */}
-              <ul className="exp-bullets">
+              <ul className="exp-panel-bullets" aria-label="Key achievements">
                 {exp.bullets.map((bullet, bi) => (
                   <li key={bi} className="exp-bullet">
-                    <div className="exp-bullet-marker" aria-hidden="true">
-                      <span className="exp-bullet-line" />
-                      <span className="exp-bullet-tip" />
-                    </div>
+                    <span className="exp-bullet-arrow" aria-hidden="true">{">"}</span>
                     <span className="exp-bullet-text">{bullet}</span>
                   </li>
                 ))}
               </ul>
 
-              {/* Tech tags */}
-              <div className="exp-tags" aria-label="Technologies used">
+              <div className="exp-panel-tags" aria-label="Technologies used">
                 {exp.tags.map((tag) => (
-                  <span key={tag} className="exp-tag">
-                    {tag}
-                  </span>
+                  <span key={tag} className="exp-tag">{tag}</span>
                 ))}
               </div>
             </article>
-          </li>
-        ))}
-      </ol>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
