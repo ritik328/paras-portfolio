@@ -119,15 +119,25 @@ export function Experience() {
         setActive(0);
 
         ctx = gsap.context(() => {
-          // Pin sidebar using fixed positioning — works even with overflow:hidden on html/body
+          // Lateral pin: keep the left sidebar visible while the right panels scroll past.
+          // pinType MUST be "transform" — pinType: "fixed" breaks inside ScrollSmoother's
+          // #smooth-content because that wrapper is CSS-transformed, and `position: fixed`
+          // resolves against a transformed ancestor instead of the viewport. That's why
+          // the sidebar was disappearing on scroll.
+          //
+          // We pin the sidebar wrap (not sidebarRef itself) and end when the panels
+          // container bottom hits the viewport bottom — that keeps the sidebar in view
+          // for the exact vertical range covered by the panels.
           if (sidebarRef.current) {
             ScrollTrigger.create({
-              trigger: section,
+              trigger: sidebarRef.current,
               start: "top top",
-              end: () => `bottom bottom`,
+              endTrigger: panels,
+              end: "bottom bottom",
               pin: sidebarRef.current,
-              pinType: "fixed",
+              pinType: "transform",
               pinSpacing: false,
+              anticipatePin: 1,
             });
           }
 
