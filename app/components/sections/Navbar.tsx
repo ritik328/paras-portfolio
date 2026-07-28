@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Home, User, Cpu, Briefcase, FolderCode, GraduationCap, Mail, Sun, Moon } from 'lucide-react';
 import { useScrollPosition } from '@/app/lib/hooks/useScrollPosition';
-import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
+import { useGSAPScroll } from '@/app/lib/hooks/useGSAPScroll';
+
 
 const navItems = [
   { label: 'Home', href: '#top', icon: Home },
@@ -31,7 +32,8 @@ const mobileNavItems = [
  */
 export function Navbar() {
   const scrollPosition = useScrollPosition();
-  const { scrollTo } = useSmoothScroll();
+  const { scrollTo } = useGSAPScroll();
+
   const [isMobile, setIsMobile] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [activeSection, setActiveSection] = useState('Home');
@@ -62,62 +64,66 @@ export function Navbar() {
     document.documentElement.setAttribute('data-theme', saved);
   }, []);
 
-  // IntersectionObserver scroll spy to auto-expand active mobile category
+  // GSAP ScrollTrigger section spy for active section tracking
   useEffect(() => {
-    if (!isMobile) return;
+    let triggers: any[] = [];
 
-    const sections = ['top', 'about', 'skills', 'experience', 'projects', 'education', 'contact'];
-    const observers = sections.map((id) => {
-      const el = document.getElementById(id);
-      if (!el) return null;
+    const initSpy = async () => {
+      try {
+        const { ScrollTrigger } = await import('@/app/lib/gsap');
 
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            const nameMap: Record<string, string> = {
-              top: 'Home',
-              about: 'About',
-              skills: 'Skills',
-              experience: 'Projects',
-              projects: 'Projects',
-              education: 'About',
-              contact: 'Contact',
-            };
-            setActiveSection(nameMap[id]);
-          }
-        },
-        {
-          rootMargin: '-25% 0px -55% 0px', // Trigger mid-screen
-        }
-      );
-      observer.observe(el);
-      return { observer, el };
-    });
+        const sections = [
+          { id: 'top', name: 'Home' },
+          { id: 'about', name: 'About' },
+          { id: 'skills', name: 'Skills' },
+          { id: 'experience', name: 'Experience' },
+          { id: 'projects', name: 'Projects' },
+          { id: 'education', name: 'Education' },
+          { id: 'contact', name: 'Contact' },
+        ];
+
+        sections.forEach(({ id, name }) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+
+          const st = ScrollTrigger.create({
+            trigger: el,
+            start: 'top 45%',
+            end: 'bottom 45%',
+            onEnter: () => setActiveSection(name),
+            onEnterBack: () => setActiveSection(name),
+          });
+          triggers.push(st);
+        });
+      } catch (err) {
+        console.error('Navbar ScrollTrigger spy init error:', err);
+      }
+    };
+
+    initSpy();
 
     return () => {
-      observers.forEach((obs) => {
-        if (obs) obs.observer.unobserve(obs.el);
-      });
+      triggers.forEach((st) => st.kill());
     };
-  }, [isMobile]);
+  }, []);
 
-  const toggleTheme = useCallback(() => {
+  const toggleTheme = useCallback(async () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
 
-    // Add transitioning class so CSS transitions fire during the switch
-    document.documentElement.classList.add('theme-transitioning');
-
-    // Clean up any existing timer
-    if (themeTimerRef.current) clearTimeout(themeTimerRef.current);
-
-    // Remove the class after transitions complete
-    themeTimerRef.current = setTimeout(() => {
-      document.documentElement.classList.remove('theme-transitioning');
-    }, 600);
+    try {
+      const { gsap } = await import('@/app/lib/gsap');
+      // Subtle GSAP color crossfade during theme transition
+      gsap.fromTo(
+        'body',
+        { opacity: 0.95 },
+        { opacity: 1, duration: 0.4, ease: 'power2.out' }
+      );
+    } catch (_) {}
   }, [theme]);
+
 
   // Cleanup timer on unmount
   useEffect(() => {

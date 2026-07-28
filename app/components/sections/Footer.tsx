@@ -1,17 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 import { useScrollPosition } from '@/app/lib/hooks/useScrollPosition';
-import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
+import { useGSAPScroll } from '@/app/lib/hooks/useGSAPScroll';
 
 /**
- * Footer with copyright, scroll-to-top button that fades in after 300px of scroll.
+ * Footer with copyright and GSAP-driven scroll-to-top button.
  */
 export function Footer() {
   const scrollPosition = useScrollPosition();
-  const { scrollTo } = useSmoothScroll();
+  const { scrollTo } = useGSAPScroll();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -26,29 +25,25 @@ export function Footer() {
             © {new Date().getFullYear()} Paras Negi. All rights reserved.
           </p>
           <p className="text-[#3a3a38] text-xs mt-1">
-            Built with Next.js · GSAP · D3.js · Framer Motion
+            Built with Next.js · GSAP · D3.js · Tailwind CSS
           </p>
         </div>
 
         {/* Scroll to top */}
-        <AnimatePresence>
-          {showScrollTop && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => scrollTo('#top')}
-              className="p-3 bg-[#2a2a28] rounded-xl hover:bg-[#e07040] transition-colors duration-300 group"
-              aria-label="Scroll to top of page"
-            >
-              <ArrowUp
-                size={20}
-                className="text-[#888884] group-hover:text-[#0d0d0c] transition-colors"
-              />
-            </motion.button>
-          )}
-        </AnimatePresence>
+        <button
+          onClick={() => scrollTo('#top')}
+          className={`p-3 bg-[#2a2a28] rounded-xl hover:bg-[#e07040] transition-all duration-300 group cursor-pointer ${
+            showScrollTop
+              ? 'opacity-100 scale-100 pointer-events-auto'
+              : 'opacity-0 scale-90 pointer-events-none'
+          }`}
+          aria-label="Scroll to top of page"
+        >
+          <ArrowUp
+            size={20}
+            className="text-[#888884] group-hover:text-[#0d0d0c] transition-colors"
+          />
+        </button>
       </div>
     </footer>
   );

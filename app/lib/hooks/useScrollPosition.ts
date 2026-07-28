@@ -1,45 +1,59 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /**
- * Custom hook to track the current scroll position of the window.
- * Throttled via requestAnimationFrame and a minimum-change threshold
- * to avoid unnecessary re-renders (critical for mobile performance).
+ * Custom hook to track window scroll position.
+ * Integrates with GSAP ScrollTrigger / ScrollSmoother updates when available,
+ * using a 5px delta threshold to prevent unnecessary state re-renders.
  */
 export function useScrollPosition(): number {
   const [scrollPosition, setScrollPosition] = useState(0);
-  const rafRef = useRef<number | null>(null);
   const lastValueRef = useRef(0);
 
-  const handleScroll = useCallback(() => {
-    if (rafRef.current !== null) return; // already scheduled
-
-    rafRef.current = requestAnimationFrame(() => {
-      const y = window.scrollY;
-      // Only update state if position changed by at least 5px
-      if (Math.abs(y - lastValueRef.current) >= 5) {
-        lastValueRef.current = y;
-        setScrollPosition(y);
-      }
-      rafRef.current = null;
-    });
-  }, []);
-
   useEffect(() => {
-    // Initialize with current position
-    lastValueRef.current = window.scrollY;
-    setScrollPosition(window.scrollY);
+    let stInstance: any = null;
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    const initListener = async () => {
+      const y = window.scrollY || 0;
+      lastValueRef.current = y;
+      setScrollPosition(y);
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
+      try {
+        const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+
+        stInstance = ScrollTrigger.create({
+          start: 0,
+          end: 'max',
+          onUpdate: (self) => {
+            const currentY = Math.round(self.scroll());
+            if (Math.abs(currentY - lastValueRef.current) >= 5) {
+              lastValueRef.current = currentY;
+              setScrollPosition(currentY);
+            }
+          },
+        });
+      } catch (_) {
+        // Fallback to native listener if GSAP is unavailable
+        const handleScroll = () => {
+          const currentY = window.scrollY;
+          if (Math.abs(currentY - lastValueRef.current) >= 5) {
+            lastValueRef.current = currentY;
+            setScrollPosition(currentY);
+          }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
       }
     };
-  }, [handleScroll]);
+
+    initListener();
+
+    return () => {
+      if (stInstance) {
+        stInstance.kill();
+      }
+    };
+  }, []);
 
   return scrollPosition;
 }

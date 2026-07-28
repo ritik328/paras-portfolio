@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Mail, Copy } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Mail, Copy, Check } from 'lucide-react';
 import { Toast } from '@/app/components/ui/Toast';
 
 const EMAIL = 'parasnegi783@gmail.com';
 
-// SVG icons for social links (brand icons not in lucide-react)
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -42,27 +40,105 @@ const socialLinks = [
 ];
 
 /**
- * Contact section with clipboard copy functionality and toast notification.
+ * Contact section featuring GSAP SplitText CTA header, button micro-animations,
+ * and toast notification feedback.
  */
 export function Contact() {
   const [showToast, setShowToast] = useState(false);
+  const [copied, setCopied] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const copyBtnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    let ctx: any = null;
+
+    const initGSAP = async () => {
+      try {
+        const { gsap, SplitText } = await import('@/app/lib/gsap');
+
+        ctx = gsap.context(() => {
+          // 1. Heading SplitText word reveal
+          const headingSplit = new SplitText('#contact-heading', { type: 'words' });
+          if (headingSplit.words) {
+            gsap.from(headingSplit.words, {
+              opacity: 0,
+              y: 20,
+              stagger: 0.08,
+              duration: 0.7,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: '#contact-heading',
+                start: 'top 85%',
+                once: true,
+              },
+            });
+          }
+
+          // 2. Subtitles & links entrance
+          gsap.from('.contact-sub', {
+            opacity: 0,
+            y: 15,
+            stagger: 0.1,
+            duration: 0.6,
+            scrollTrigger: {
+              trigger: '.contact-sub',
+              start: 'top 85%',
+              once: true,
+            },
+          });
+
+          // 3. Buttons entrance
+          gsap.from('.contact-actions', {
+            opacity: 0,
+            y: 20,
+            duration: 0.6,
+            scrollTrigger: {
+              trigger: '.contact-actions',
+              start: 'top 85%',
+              once: true,
+            },
+          });
+        }, sectionRef);
+      } catch (err) {
+        console.error('Contact GSAP init error:', err);
+      }
+    };
+
+    initGSAP();
+
+    return () => {
+      ctx?.revert();
+    };
+  }, []);
 
   const handleEmailCopy = async () => {
     try {
       await navigator.clipboard.writeText(EMAIL);
-      setShowToast(true);
     } catch {
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = EMAIL;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      setShowToast(true);
     }
+
+    setCopied(true);
+    setShowToast(true);
+
+    // GSAP Button morph micro-interaction
+    try {
+      const { gsap } = await import('@/app/lib/gsap');
+      if (copyBtnRef.current) {
+        gsap.timeline()
+          .to(copyBtnRef.current, { scale: 0.95, duration: 0.1 })
+          .to(copyBtnRef.current, { scale: 1, duration: 0.2, ease: 'back.out(2)' });
+      }
+    } catch (_) {}
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
   };
 
   return (
@@ -74,54 +150,37 @@ export function Contact() {
         aria-labelledby="contact-heading"
       >
         <div className="max-w-[1200px] mx-auto px-20 max-md:px-6 text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
+          <h2
             id="contact-heading"
             className="text-section-heading text-[#f0ede6] mb-6"
           >
             Let&apos;s Work Together
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="text-xl text-[#888884] mb-4 max-w-2xl mx-auto"
-          >
+          <p className="contact-sub text-xl text-[#888884] mb-4 max-w-2xl mx-auto">
             I&apos;m currently open to freelance opportunities and full-time positions.
-          </motion.p>
+          </p>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-[#888884] mb-12"
-          >
+          <p className="contact-sub text-[#888884] mb-12">
             <a
               href={`mailto:${EMAIL}`}
               className="text-[#c8b89a] hover:text-[#e07040] transition-colors font-mono text-sm"
             >
               {EMAIL}
             </a>
-          </motion.p>
+          </p>
 
           {/* Action buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-10"
-          >
-            {/* Copy email button */}
+          <div className="contact-actions flex flex-col sm:flex-row justify-center items-center gap-4 mb-10">
+            {/* Copy email button with GSAP micro-interaction */}
             <button
+              ref={copyBtnRef}
               onClick={handleEmailCopy}
-              className="inline-flex items-center gap-3 px-6 py-3 bg-[#e07040] text-[#0d0d0c] rounded-xl hover:bg-[#c8b89a] transition-colors duration-300 font-medium text-sm group"
+              className="inline-flex items-center gap-3 px-6 py-3 bg-[#e07040] text-[#0d0d0c] rounded-xl hover:bg-[#c8b89a] transition-colors duration-300 font-medium text-sm group cursor-pointer"
               aria-label="Copy email address to clipboard"
             >
-              <Mail size={18} />
-              <span>Copy Email Address</span>
+              {copied ? <Check size={18} className="text-[#0d0d0c]" /> : <Mail size={18} />}
+              <span>{copied ? 'Copied to Clipboard!' : 'Copy Email Address'}</span>
               <Copy size={14} className="opacity-60 group-hover:opacity-100" />
             </button>
 
@@ -129,30 +188,23 @@ export function Contact() {
             {socialLinks.map((social) => {
               const { Icon } = social;
               return (
-                <motion.a
+                <a
                   key={social.id}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.2 }}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-[#1a1a18] border border-[#3a3a38] rounded-xl hover:border-[#e07040] hover:text-[#e07040] text-[#888884] transition-colors duration-300 text-sm font-medium"
+                  className="inline-flex items-center gap-2 px-5 py-3 bg-[#1a1a18] border border-[#3a3a38] rounded-xl hover:border-[#e07040] hover:text-[#e07040] text-[#888884] transition-colors duration-300 text-sm font-medium hover:scale-105"
                   aria-label={social.label}
                 >
                   <Icon size={18} />
                   <span>{social.name}</span>
-                </motion.a>
+                </a>
               );
             })}
-          </motion.div>
+          </div>
 
           {/* Decorative divider */}
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={isInView ? { scaleX: 1 } : {}}
-            transition={{ duration: 1, delay: 0.6 }}
-            className="max-w-xs mx-auto h-px bg-gradient-to-r from-transparent via-[#3a3a38] to-transparent origin-center"
-          />
+          <div className="max-w-xs mx-auto h-px bg-gradient-to-r from-transparent via-[#3a3a38] to-transparent origin-center" />
         </div>
       </section>
 

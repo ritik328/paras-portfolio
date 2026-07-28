@@ -199,7 +199,9 @@ export function Skills() {
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hoveredGroupId, setHoveredGroupId] = useState<string | null>(null);
 
-  // Load settings from localStorage
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Load settings from localStorage & init GSAP DrawSVG + MotionPath
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem('skills-layout-settings');
@@ -210,7 +212,68 @@ export function Skills() {
         console.error('Failed to parse skills layout settings', e);
       }
     }
+
+    let ctx: any = null;
+
+    const initGSAP = async () => {
+      try {
+        const { gsap, ScrollTrigger, DrawSVGPlugin, MotionPathPlugin } = await import('@/app/lib/gsap');
+
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        ctx = gsap.context(() => {
+          if (prefersReduced) return;
+
+          // 1. DrawSVG connector lines assembly sequence
+          const connPaths = gsap.utils.toArray<SVGPathElement>('.skills-conn-path');
+          if (connPaths.length > 0) {
+            gsap.fromTo(
+              connPaths,
+              { drawSVG: '0%' },
+              {
+                drawSVG: '100%',
+                duration: 1.2,
+                stagger: 0.04,
+                ease: 'power2.inOut',
+                scrollTrigger: {
+                  trigger: sectionRef.current,
+                  start: 'top 75%',
+                  once: true,
+                },
+              }
+            );
+          }
+
+          // 2. MotionPath animated signal dot (looping, explicitly killed for reduced motion)
+          const signalDot = document.getElementById('skills-signal-dot') as SVGElement | null;
+          const mainPath = document.getElementById('skills-main-path') as SVGPathElement | null;
+
+          if (signalDot && mainPath) {
+            gsap.to(signalDot, {
+              duration: 4,
+              repeat: -1,
+              ease: 'linear',
+              motionPath: {
+                path: mainPath,
+                align: mainPath,
+                alignOrigin: [0.5, 0.5],
+              },
+            });
+          }
+
+        }, sectionRef);
+      } catch (err) {
+        console.error('Skills GSAP animation error:', err);
+      }
+    };
+
+    initGSAP();
+
+    return () => {
+      ctx?.revert();
+    };
   }, []);
+
 
   const updateSetting = (key: keyof SkillsLayoutSettings, value: number) => {
     const updated = { ...settings, [key]: value };
@@ -439,7 +502,7 @@ export function Skills() {
   };
 
   return (
-    <section id="skills" className="skills-section" aria-labelledby="skills-heading">
+    <section id="skills" ref={sectionRef} className="skills-section" aria-labelledby="skills-heading">
       {/* Background dot grid */}
       <div className="skills-bg-grid" aria-hidden="true" />
 
@@ -508,19 +571,30 @@ export function Skills() {
               {CONNECTIONS.map((conn, idx) => {
                 const active = isConnectionActive(conn);
                 const color = active ? getActiveColor(conn) : 'var(--color-border)';
+                const isMain = conn.from === 'center' && conn.to === 'frameworks';
                 return (
                   <path
                     key={`line-${idx}`}
+                    id={isMain ? 'skills-main-path' : undefined}
                     d={conn.path}
                     fill="none"
                     stroke={color}
                     strokeWidth={active ? 2 : 1}
-                    className="transition-all duration-300 ease-out"
+                    className="skills-conn-path transition-all duration-300 ease-out"
                     opacity={active ? 1 : 0.6}
                   />
                 );
               })}
             </g>
+
+            {/* MotionPath signal pulse dot */}
+            <circle
+              id="skills-signal-dot"
+              r={3.5}
+              fill="#e07040"
+              className="pointer-events-none drop-shadow-[0_0_6px_#e07040]"
+            />
+
 
             {/* Active path glowing shadows */}
             <g>

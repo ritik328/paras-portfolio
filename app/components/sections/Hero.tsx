@@ -191,14 +191,89 @@ export function Hero() {
     }
   };
 
+  // GSAP Entrance Timeline (SplitText + ScrambleText)
+  useEffect(() => {
+    let ctx: any = null;
+
+    const initGSAP = async () => {
+      try {
+        const { gsap, SplitText, ScrambleTextPlugin } = await import('@/app/lib/gsap');
+
+        ctx = gsap.context(() => {
+          const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+          // 1. Status badge
+          tl.from('.hero-status', { opacity: 0, y: 15, duration: 0.6 });
+
+          // 2. Name SplitText (chars split)
+          const firstSplit = new SplitText('.hero-name-first', { type: 'chars' });
+          const lastSplit = new SplitText('.hero-name-last', { type: 'chars' });
+
+          if (firstSplit.chars && lastSplit.chars) {
+            tl.from(
+              firstSplit.chars,
+              { opacity: 0, y: 40, skewY: 8, stagger: 0.04, duration: 0.7 },
+              '-=0.3'
+            );
+            tl.from(
+              lastSplit.chars,
+              { opacity: 0, y: 40, skewY: 8, stagger: 0.04, duration: 0.7 },
+              '-=0.5'
+            );
+          }
+
+          // 3. Role row
+          tl.from('.hero-role-row', { opacity: 0, y: 15, duration: 0.5 }, '-=0.3');
+
+          // 4. Bio text reveal + ScrambleText on keywords
+          tl.from('.hero-bio', { opacity: 0, y: 20, duration: 0.6 }, '-=0.2');
+          tl.to(
+            '.hero-bio-strong',
+            {
+              duration: 1.5,
+              scrambleText: {
+                text: 'internal automation platforms, AI workflows, and enterprise APIs',
+                chars: '01!<>-_\\/{}—=+*^?#',
+                revealDelay: 0.2,
+                speed: 0.4,
+              },
+            },
+            '-=0.4'
+          );
+
+          // 5. Divider
+          tl.from('.hero-divider', { scaleX: 0, duration: 0.5, transformOrigin: 'left center' }, '-=0.8');
+
+          // 6. Skill chips
+          tl.from('.hero-tag', { opacity: 0, y: 10, scale: 0.9, stagger: 0.05, duration: 0.4 }, '-=0.4');
+
+          // 7. CTAs
+          tl.from('.hero-ctas button', { opacity: 0, y: 15, stagger: 0.1, duration: 0.5 }, '-=0.3');
+
+          // 8. Socials
+          tl.from('.hero-social-link', { opacity: 0, y: 10, stagger: 0.06, duration: 0.4 }, '-=0.3');
+        });
+      } catch (err) {
+        console.error('Hero GSAP animation error:', err);
+      }
+    };
+
+    initGSAP();
+
+    return () => {
+      ctx?.revert();
+    };
+  }, []);
+
   return (
     <section
       id="top"
       className="relative w-full min-h-screen bg-surface-primary overflow-hidden flex flex-col justify-center pt-20 md:pt-0"
       aria-label="Hero section"
     >
-      {/* Background visual subtle gradient */}
+      {/* Background visual subtle gradient with parallax */}
       <div
+        data-speed="1.15"
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
@@ -206,11 +281,12 @@ export function Hero() {
         }}
       />
 
-      {/* Background grid atmosphere */}
-      <div className="hero-bg-grid" aria-hidden="true" />
+      {/* Background grid atmosphere with parallax */}
+      <div className="hero-bg-grid" data-speed="0.85" aria-hidden="true" />
 
       {/* Right-edge rule — matches the spider web canvas boundary */}
       <div className="hero-right-rule" aria-hidden="true" />
+
 
       <div
         className="max-w-[1200px] w-full mx-auto px-6 md:px-20 z-10 grid md:grid-cols-2 items-center my-auto py-12 transition-all duration-300"
@@ -233,17 +309,14 @@ export function Hero() {
         >
           <div className="hero-content">
             {/* Status badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
+            <div
               className="hero-status"
               role="status"
               aria-label="Availability status"
             >
               <span className="hero-status-pulse" aria-hidden="true" />
               <span className="hero-status-text">Available for Opportunities</span>
-            </motion.div>
+            </div>
 
             {/* Name block */}
             <div 
@@ -253,23 +326,12 @@ export function Hero() {
               onMouseLeave={() => setIsTitleHovered(false)}
               title="Triple click to open layout editor"
             >
-              <motion.h1 
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-                className="hero-name-first"
-              >
+              <h1 className="hero-name-first inline-block mr-3">
                 Paras
-              </motion.h1>
-              <motion.span 
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.25, ease: 'easeOut' }}
-                className="hero-name-last"
-                aria-label="Negi"
-              >
+              </h1>
+              <span className="hero-name-last inline-block" aria-label="Negi">
                 Negi
-              </motion.span>
+              </span>
 
               <AnimatePresence>
                 {isTitleHovered && (
@@ -300,44 +362,30 @@ export function Hero() {
             </div>
 
             {/* Role row */}
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.35, ease: 'easeOut' }}
+            <div 
               className="hero-role-row" 
               aria-label="Role: Full-Stack Developer"
             >
               <span className="hero-role-line" aria-hidden="true" />
               <span className="hero-role">Full-Stack Developer</span>
-            </motion.div>
+            </div>
 
             {/* Bio */}
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.45, ease: 'easeOut' }}
-              className="hero-bio"
-            >
+            <p className="hero-bio">
               I build{" "}
               <strong className="hero-bio-strong">
                 internal automation platforms, AI workflows, and enterprise APIs
               </strong>{" "}
               — specializing in MuleSoft, Python, and cloud-native integrations.
-            </motion.p>
+            </p>
 
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.55 }}
+            <div 
               className="hero-divider" 
               aria-hidden="true" 
             />
 
             {/* Skill chips */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+            <div 
               className="hero-tags" 
               aria-label="Core technologies"
             >
@@ -346,15 +394,10 @@ export function Hero() {
                   {skill}
                 </span>
               ))}
-            </motion.div>
+            </div>
 
             {/* CTA buttons */}
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="hero-ctas"
-            >
+            <div className="hero-ctas">
               <button 
                 onClick={() => scrollTo('#projects')} 
                 className="hero-btn-primary cursor-pointer"
@@ -369,13 +412,10 @@ export function Hero() {
                 Get in Touch
                 <IconSend />
               </button>
-            </motion.div>
+            </div>
 
             {/* Social / contact links */}
-            <motion.nav 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
+            <nav 
               className="hero-socials" 
               aria-label="Contact and social links"
             >
@@ -392,7 +432,8 @@ export function Hero() {
                   {label}
                 </a>
               ))}
-            </motion.nav>
+            </nav>
+
           </div>
         </div>
 

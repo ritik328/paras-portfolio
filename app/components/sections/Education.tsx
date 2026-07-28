@@ -1,17 +1,75 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { CheckCircle, Clock, Award, GraduationCap } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Clock, Award } from 'lucide-react';
 import { education, certifications } from '@/app/lib/data/education';
 
 /**
- * Education & Certifications section displaying academic timeline and credentials.
- * Implements a premium blueprint schematic vertical timeline layout.
+ * Education & Certifications section with clean GSAP ScrollTrigger animations.
+ * Intentionally quiet, subtle entrance animations.
  */
 export function Education() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+
+  useEffect(() => {
+    let ctx: any = null;
+
+    const initGSAP = async () => {
+      try {
+        const { gsap } = await import('@/app/lib/gsap');
+
+        ctx = gsap.context(() => {
+          // 1. Header
+          gsap.from('#education-heading', {
+            opacity: 0,
+            y: 20,
+            duration: 0.6,
+            scrollTrigger: {
+              trigger: '#education-heading',
+              start: 'top 85%',
+              once: true,
+            },
+          });
+
+          // 2. Timeline entries
+          gsap.from('.edu-entry', {
+            opacity: 0,
+            y: 25,
+            stagger: 0.15,
+            duration: 0.6,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: '.edu-timeline',
+              start: 'top 80%',
+              once: true,
+            },
+          });
+
+          // 3. Credentials grid items
+          gsap.from('.cert-item', {
+            opacity: 0,
+            y: 15,
+            stagger: 0.06,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: '.cert-grid',
+              start: 'top 85%',
+              once: true,
+            },
+          });
+        }, sectionRef);
+      } catch (err) {
+        console.error('Education GSAP init error:', err);
+      }
+    };
+
+    initGSAP();
+
+    return () => {
+      ctx?.revert();
+    };
+  }, []);
 
   return (
     <section
@@ -27,27 +85,15 @@ export function Education() {
         {/* Section Header */}
         <div className="edu-header">
           <p className="edu-eyebrow">Academic Journey</p>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            id="education-heading"
-            className="edu-title"
-          >
+          <h2 id="education-heading" className="edu-title">
             Education &amp; <em>Certifications</em>
-          </motion.h2>
+          </h2>
         </div>
 
         {/* Academic Timeline */}
         <ol className="edu-timeline">
-          {education.map((edu, index) => (
-            <motion.li
-              key={edu.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 + index * 0.15 }}
-              className="edu-entry"
-            >
+          {education.map((edu) => (
+            <li key={edu.id} className="edu-entry">
               {/* Left Column Year Marker */}
               <div className="edu-marker">
                 <span className="edu-year">{edu.year}</span>
@@ -76,7 +122,7 @@ export function Education() {
                   </div>
                 )}
               </div>
-            </motion.li>
+            </li>
           ))}
         </ol>
 
@@ -89,14 +135,8 @@ export function Education() {
           </div>
 
           <ul className="cert-grid">
-            {certifications.map((cert, index) => (
-              <motion.li
-                key={cert.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.4 + index * 0.06 }}
-                className="cert-item"
-              >
+            {certifications.map((cert) => (
+              <li key={cert.id} className="cert-item">
                 {/* Custom Icon Box */}
                 <div className="cert-icon">
                   {cert.status === 'completed' ? (
@@ -122,7 +162,7 @@ export function Education() {
                 >
                   {cert.status === 'completed' ? cert.completionDate ?? 'Done' : 'Ongoing'}
                 </span>
-              </motion.li>
+              </li>
             ))}
           </ul>
         </div>
