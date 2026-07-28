@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Settings, RotateCcw, X, Sliders } from 'lucide-react';
-import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
+import { useGSAPScroll } from '@/app/lib/hooks/useGSAPScroll';
 import { InteractiveMap } from '@/app/components/canvas/InteractiveMap';
 
 // ─── SVG Icons (inline — zero external deps) ───────────────────────────────────
@@ -110,7 +110,7 @@ const DEFAULT_SETTINGS: LayoutSettings = {
  * the Hero title, Navbar logo, or Skills header.
  */
 export function Hero() {
-  const { scrollTo } = useSmoothScroll();
+  const { scrollTo } = useGSAPScroll();
   const [settings, setSettings] = useState<LayoutSettings>(DEFAULT_SETTINGS);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
@@ -191,6 +191,8 @@ export function Hero() {
     }
   };
 
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+
   // GSAP Entrance Timeline (SplitText + ScrambleText)
   useEffect(() => {
     let ctx: any = null;
@@ -198,8 +200,28 @@ export function Hero() {
     const initGSAP = async () => {
       try {
         const { gsap, SplitText, ScrambleTextPlugin } = await import('@/app/lib/gsap');
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         ctx = gsap.context(() => {
+          if (prefersReduced) {
+            // Reveal all animated elements statically
+            gsap.set(
+              [
+                '.hero-status',
+                '.hero-name-first',
+                '.hero-name-last',
+                '.hero-role-row',
+                '.hero-bio',
+                '.hero-divider',
+                '.hero-tag',
+                '.hero-ctas button',
+                '.hero-social-link',
+              ],
+              { opacity: 1, y: 0, scale: 1, skewY: 0 }
+            );
+            return;
+          }
+
           const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
           // 1. Status badge
@@ -252,6 +274,22 @@ export function Hero() {
 
           // 8. Socials
           tl.from('.hero-social-link', { opacity: 0, y: 10, stagger: 0.06, duration: 0.4 }, '-=0.3');
+
+          // 9. Scroll indicator bounce — infinite yoyo, only when motion is allowed
+          if (scrollIndicatorRef.current) {
+            gsap.fromTo(
+              scrollIndicatorRef.current,
+              { opacity: 0 },
+              { opacity: 1, duration: 0.6, delay: 1.2 }
+            );
+            gsap.to(scrollIndicatorRef.current.querySelector('.hero-scroll-arrow'), {
+              y: 6,
+              duration: 0.75,
+              ease: 'sine.inOut',
+              repeat: -1,
+              yoyo: true,
+            });
+          }
         });
       } catch (err) {
         console.error('Hero GSAP animation error:', err);
@@ -641,23 +679,17 @@ export function Hero() {
         </div>
       )}
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-text-secondary hidden md:block cursor-pointer"
+      {/* Scroll indicator (GSAP-driven; bounce loop skipped under prefers-reduced-motion) */}
+      <div
+        ref={scrollIndicatorRef}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-text-secondary hidden md:block cursor-pointer opacity-0"
         onClick={() => scrollTo('#about')}
       >
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-          className="flex flex-col items-center gap-1"
-        >
+        <div className="hero-scroll-arrow flex flex-col items-center gap-1">
           <span className="text-[10px] font-mono tracking-widest uppercase mb-1">Scroll Down</span>
           <ChevronDown size={20} />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
     </section>
   );

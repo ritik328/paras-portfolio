@@ -224,25 +224,70 @@ export function Skills() {
         ctx = gsap.context(() => {
           if (prefersReduced) return;
 
-          // 1. DrawSVG connector lines assembly sequence
-          const connPaths = gsap.utils.toArray<SVGPathElement>('.skills-conn-path');
-          if (connPaths.length > 0) {
-            gsap.fromTo(
-              connPaths,
-              { drawSVG: '0%' },
-              {
-                drawSVG: '100%',
-                duration: 1.2,
-                stagger: 0.04,
-                ease: 'power2.inOut',
-                scrollTrigger: {
-                  trigger: sectionRef.current,
-                  start: 'top 75%',
-                  once: true,
-                },
-              }
-            );
+          // 0. Pin the section while the connector-draw sequence plays.
+          //    pinType: "transform" is required with ScrollSmoother active —
+          //    matches the fix reused from Experience's sidebar indicator.
+          if (sectionRef.current) {
+            ScrollTrigger.create({
+              trigger: sectionRef.current,
+              start: 'top top',
+              end: '+=800',
+              pin: true,
+              pinType: 'transform',
+              pinSpacing: true,
+              anticipatePin: 1,
+            });
           }
+
+          // 1. DrawSVG connector lines assembly sequence — clustered per plan:
+          //    center → languages (0s), center → frameworks (0.3s),
+          //    center → tools (0.6s), center → ai (0.9s);
+          //    within a cluster the hub→leaf staggers at 0.08s.
+          const drawTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 75%',
+              once: true,
+            },
+          });
+
+          const clusters: Array<{ group: string; offset: number }> = [
+            { group: 'languages', offset: 0 },
+            { group: 'frameworks', offset: 0.3 },
+            { group: 'tools', offset: 0.6 },
+            { group: 'ai', offset: 0.9 },
+          ];
+
+          clusters.forEach(({ group, offset }) => {
+            const hubPath = document.querySelector<SVGPathElement>(
+              `.skills-conn-path[data-conn="center->${group}"]`
+            );
+            const leafPaths = gsap.utils.toArray<SVGPathElement>(
+              `.skills-conn-path[data-conn-group="${group}"]:not([data-conn="center->${group}"])`
+            );
+
+            if (hubPath) {
+              drawTl.fromTo(
+                hubPath,
+                { drawSVG: '0%' },
+                { drawSVG: '100%', duration: 0.5, ease: 'power2.out' },
+                offset
+              );
+            }
+            if (leafPaths.length) {
+              drawTl.fromTo(
+                leafPaths,
+                { drawSVG: '0%' },
+                {
+                  drawSVG: '100%',
+                  duration: 0.5,
+                  stagger: 0.08,
+                  ease: 'power2.out',
+                },
+                offset + 0.35
+              );
+            }
+          });
 
           // 2. MotionPath animated signal dot (looping, explicitly killed for reduced motion)
           const signalDot = document.getElementById('skills-signal-dot') as SVGElement | null;
@@ -572,6 +617,9 @@ export function Skills() {
                 const active = isConnectionActive(conn);
                 const color = active ? getActiveColor(conn) : 'var(--color-border)';
                 const isMain = conn.from === 'center' && conn.to === 'frameworks';
+                // cluster grouping for the DrawSVG timeline
+                const clusterGroup =
+                  conn.from === 'center' ? conn.to : conn.from;
                 return (
                   <path
                     key={`line-${idx}`}
@@ -582,6 +630,8 @@ export function Skills() {
                     strokeWidth={active ? 2 : 1}
                     className="skills-conn-path transition-all duration-300 ease-out"
                     opacity={active ? 1 : 0.6}
+                    data-conn={`${conn.from}->${conn.to}`}
+                    data-conn-group={clusterGroup}
                   />
                 );
               })}

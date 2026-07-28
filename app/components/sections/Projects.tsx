@@ -93,37 +93,90 @@ function ProjectCard({
  */
 export function Projects() {
   const gridRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    let ctx: any = null;
+
     const initAnimations = async () => {
       try {
-        const gsapModule = await import('gsap');
-        const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-        gsapModule.default.registerPlugin(ScrollTrigger);
+        const { gsap, Flip } = await import('@/app/lib/gsap');
 
-        if (!gridRef.current) return;
+        ctx = gsap.context(() => {
+          // Section heading reveal
+          gsap.from('#projects-heading', {
+            opacity: 0,
+            y: 24,
+            duration: 0.7,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: '#projects-heading',
+              start: 'top 85%',
+              once: true,
+            },
+          });
 
-        gsapModule.default.fromTo(
-          '.proj-card',
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.15,
+          gsap.from('.proj-eyebrow', {
+            opacity: 0,
+            y: 15,
+            duration: 0.5,
             ease: 'power2.out',
             scrollTrigger: {
-              trigger: gridRef.current,
-              start: 'top 75%',
+              trigger: '.proj-header',
+              start: 'top 85%',
+              once: true,
             },
+          });
+
+          // Featured cards — slower, larger scale-in
+          gsap.from('.proj-card.featured', {
+            opacity: 0,
+            y: 40,
+            scale: 0.95,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: '.proj-card.featured',
+              start: 'top 80%',
+              once: true,
+            },
+          });
+
+          // Regular cards — tighter stagger
+          gsap.from('.proj-card:not(.featured)', {
+            opacity: 0,
+            y: 30,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: '.proj-card:not(.featured)',
+              start: 'top 80%',
+              once: true,
+            },
+          });
+
+          // Flip infrastructure (future-proof): a future filter UI can call
+          //   const state = Flip.getState('.proj-card');
+          //   setFilter(next);
+          //   requestAnimationFrame(() => Flip.from(state, { duration: 0.6, ease: 'power2.inOut' }));
+          // to animate card reordering instead of a jump-cut.
+          if (gridRef.current) {
+            (gridRef.current as any).__flipCapture = () =>
+              Flip.getState('.proj-card');
           }
-        );
+        }, sectionRef);
       } catch (err) {
         console.error('GSAP projects init error:', err);
       }
     };
 
     initAnimations();
+
+    return () => {
+      ctx?.revert();
+    };
   }, []);
 
   // Filter projects
@@ -133,6 +186,7 @@ export function Projects() {
   return (
     <section
       id="projects"
+      ref={sectionRef}
       className="proj-section"
       aria-labelledby="projects-heading"
     >
