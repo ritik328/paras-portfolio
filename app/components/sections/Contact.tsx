@@ -98,6 +98,18 @@ export function Contact() {
               once: true,
             },
           });
+
+          // 4. Decorative divider scaleX from 0 → 1
+          gsap.from('.contact-divider', {
+            scaleX: 0,
+            duration: 0.8,
+            ease: 'power3.inOut',
+            scrollTrigger: {
+              trigger: '.contact-divider',
+              start: 'top 90%',
+              once: true,
+            },
+          });
         }, sectionRef);
       } catch (err) {
         console.error('Contact GSAP init error:', err);
@@ -204,7 +216,7 @@ export function Contact() {
           </div>
 
           {/* Decorative divider */}
-          <div className="max-w-xs mx-auto h-px bg-gradient-to-r from-transparent via-[#3a3a38] to-transparent origin-center" />
+          <div className="contact-divider max-w-xs mx-auto h-px bg-gradient-to-r from-transparent via-[#3a3a38] to-transparent origin-center" />
         </div>
       </section>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useSmoothScroll } from '@/app/lib/hooks/useSmoothScroll';
+import { useGSAPScroll } from '@/app/lib/hooks/useGSAPScroll';
 
 interface Node {
   id: string;
@@ -248,7 +248,7 @@ const CONNECTIONS: Connection[] = [
 ];
 
 export function InteractiveMap() {
-  const { scrollTo } = useSmoothScroll();
+  const { scrollTo } = useGSAPScroll();
   const [hoveredGroupId, setHoveredGroupId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
