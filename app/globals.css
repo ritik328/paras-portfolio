@@ -1873,6 +1873,17 @@ body {
    Hero Section Design Styles
    ========================================================================== */
 
+/* Klein Bottle WebGL background — behind all other hero layers */
+.klein-bottle-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .hero-bg-grid {
   position: absolute;
   inset: 0;

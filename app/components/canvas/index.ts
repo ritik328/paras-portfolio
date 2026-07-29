@@ -3,3 +3,4 @@
  */
 export { InteractiveMap } from './InteractiveMap';
 export { TubesCursor } from './TubesCursor';
+export { KleinBottleBackground } from './KleinBottleBackground';

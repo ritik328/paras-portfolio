@@ -1,10 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Settings, RotateCcw, X, Sliders } from 'lucide-react';
 import { useGSAPScroll } from '@/app/lib/hooks/useGSAPScroll';
+import { useTheme } from '@/app/lib/hooks/useTheme';
+import { useGSAP } from '@/app/components/providers/GSAPProvider';
 import { InteractiveMap } from '@/app/components/canvas/InteractiveMap';
+
+const KleinBottleBackground = dynamic(
+  () => import('@/app/components/canvas/KleinBottleBackground').then(m => m.KleinBottleBackground),
+  { ssr: false }
+);
 
 // ─── SVG Icons (inline — zero external deps) ───────────────────────────────────
 function IconArrowRight() {
@@ -111,6 +119,8 @@ const DEFAULT_SETTINGS: LayoutSettings = {
  */
 export function Hero() {
   const { scrollTo } = useGSAPScroll();
+  const { theme } = useTheme();
+  const { isReducedMotion } = useGSAP();
   const [settings, setSettings] = useState<LayoutSettings>(DEFAULT_SETTINGS);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
@@ -309,6 +319,12 @@ export function Hero() {
       className="relative w-full min-h-screen bg-surface-primary overflow-hidden flex flex-col justify-center pt-20 md:pt-0"
       aria-label="Hero section"
     >
+      {/* 4D Klein Bottle WebGL background — dark mode only, behind all layers */}
+      <KleinBottleBackground
+        active={theme === 'dark'}
+        reducedMotion={isReducedMotion}
+      />
+
       {/* Background visual subtle gradient with parallax */}
       <div
         data-speed="1.15"

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Home, User, Cpu, Briefcase, FolderCode, GraduationCap, Mail, Sun, Moon } from 'lucide-react';
 import { useScrollPosition } from '@/app/lib/hooks/useScrollPosition';
 import { useGSAPScroll } from '@/app/lib/hooks/useGSAPScroll';
+import { useTheme } from '@/app/lib/hooks/useTheme';
 
 
 const navItems = [
@@ -35,9 +36,8 @@ export function Navbar() {
   const { scrollTo } = useGSAPScroll();
 
   const [isMobile, setIsMobile] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const { theme, toggleTheme } = useTheme();
   const [activeSection, setActiveSection] = useState('Home');
-  const themeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounced resize handler
   const resizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -57,12 +57,7 @@ export function Navbar() {
     };
   }, []);
 
-  // Sync theme with local storage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
-    setTheme(saved);
-    document.documentElement.setAttribute('data-theme', saved);
-  }, []);
+
 
   // GSAP ScrollTrigger section spy for active section tracking
   useEffect(() => {
@@ -107,30 +102,18 @@ export function Navbar() {
     };
   }, []);
 
-  const toggleTheme = useCallback(async () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-
+  // Wrap toggleTheme with the GSAP crossfade effect
+  const handleToggleTheme = async () => {
+    toggleTheme();
     try {
       const { gsap } = await import('@/app/lib/gsap');
-      // Subtle GSAP color crossfade during theme transition
       gsap.fromTo(
         'body',
         { opacity: 0.95 },
         { opacity: 1, duration: 0.4, ease: 'power2.out' }
       );
     } catch (_) {}
-  }, [theme]);
-
-
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (themeTimerRef.current) clearTimeout(themeTimerRef.current);
-    };
-  }, []);
+  };
 
   return (
     <>
@@ -175,7 +158,7 @@ export function Navbar() {
             <motion.button
               whileHover={{ scale: 1.15, y: -2 }}
               whileTap={{ scale: 0.9 }}
-              onClick={toggleTheme}
+              onClick={handleToggleTheme}
               className="flex items-center justify-center text-text-secondary hover:text-accent-orange hover:bg-surface-tertiary/50 transition-colors duration-200 cursor-pointer overflow-hidden w-10 h-10 rounded-xl"
               aria-label="Toggle light and dark theme"
             >
