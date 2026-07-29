@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Serif_Display, DM_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { TubesCursor } from '@/app/components/canvas/TubesCursor';
+import { KleinBottleBackground } from '@/app/components/canvas/KleinBottleBackground';
 import { GSAPProvider } from '@/app/components/providers/GSAPProvider';
 
 // DM Serif Display for hero and section headlines
@@ -128,6 +129,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full antialiased">
+        {/* Site-wide 4D Klein bottle background (dark mode only).
+            Must stay outside GSAPProvider: ScrollSmoother transforms
+            #smooth-content, which would break position: fixed. */}
+        <KleinBottleBackground />
         <TubesCursor />
         <GSAPProvider>{children}</GSAPProvider>
       </body>

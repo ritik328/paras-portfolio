@@ -1873,15 +1873,60 @@ body {
    Hero Section Design Styles
    ========================================================================== */
 
-/* Klein Bottle WebGL background — behind all other hero layers */
+/* ==========================================================================
+   Klein Bottle WebGL background — site-wide fixed layer
+   Mounted outside #smooth-wrapper so `position: fixed` is not captured by
+   ScrollSmoother's transform. Sits on z-index -1: above the propagated body
+   background, below every section background / content layer.
+   ========================================================================== */
 .klein-bottle-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  contain: strict;
+}
+
+.klein-bottle-wrap .klein-bottle-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0.62;
+}
+
+/* Readability scrim over the animation (only while the scene is live) */
+html[data-klein='on'] .klein-bottle-wrap::after {
+  content: '';
   position: absolute;
   inset: 0;
-  z-index: 0;
+  background: radial-gradient(
+    ellipse at 60% 40%,
+    rgba(13, 13, 12, 0.3) 0%,
+    rgba(13, 13, 12, 0.62) 55%,
+    rgba(13, 13, 12, 0.82) 100%
+  );
   pointer-events: none;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+}
+
+/* While the background is live, let the sections show it through.
+   The attribute is set on <html> by KleinBottleBackground (dark mode only). */
+html[data-klein='on'] #top,
+html[data-klein='on'] .about-section,
+html[data-klein='on'] .skills-section,
+html[data-klein='on'] .exp-section,
+html[data-klein='on'] .proj-section,
+html[data-klein='on'] .edu-section,
+html[data-klein='on'] #contact {
+  background: transparent !important;
+}
+
+/* Footer keeps a solid base so it reads as a page terminator */
+html[data-klein='on'] footer {
+  background-color: rgba(26, 26, 24, 0.82) !important;
+  backdrop-filter: blur(6px);
 }
 
 .hero-bg-grid {
