@@ -365,6 +365,9 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
                 // Normalize velocity: getVelocity() returns px/s, clamp to 0–3 range
                 const rawVel = Math.abs(self.getVelocity()) / 1000;
                 scrollVelocity = Math.min(rawVel, 3);
+                if (heroVisible && tabVisible && scrollProgress < 1.0) {
+                  tryStartLoop();
+                }
               },
               onEnter: () => { heroVisible = true; tryStartLoop(); },
               onEnterBack: () => { heroVisible = true; tryStartLoop(); },
@@ -394,6 +397,7 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
         function tryStartLoop() {
           if (isAnimating || isDestroyed) return;
           if (!heroVisible || !tabVisible) return;
+          if (scrollProgress >= 1.0) return;
           isAnimating = true;
           clock.start();
           rafId = requestAnimationFrame(animate);
