@@ -80,6 +80,7 @@ export function Experience() {
 
   useEffect(() => {
     let ctx: { revert: () => void } | null = null;
+    let mm: { revert: () => void } | null = null;
 
     const init = async () => {
       try {
@@ -104,43 +105,65 @@ export function Experience() {
           });
 
           const activeBtn = navItemRefs.current[index];
-          if (activeBtn && bar) {
-            const btnTop = activeBtn.offsetTop;
-            const btnHeight = activeBtn.offsetHeight;
+          if (!activeBtn) return;
+
+          // The vertical track is display:none on mobile, which leaves the bar
+          // without an offsetParent — animating `top` there would use the
+          // horizontal row's coordinates and land nowhere useful.
+          if (bar && bar.offsetParent !== null) {
             gsap.to(bar, {
-              top: btnTop,
-              height: btnHeight,
+              top: activeBtn.offsetTop,
+              height: activeBtn.offsetHeight,
               duration: 0.45,
               ease: "power3.out",
             });
+          }
+
+          // Mobile: the nav is a horizontal scroller, so bring the active chip
+          // into view without touching page scroll.
+          const scroller = sidebarRef.current;
+          if (scroller && scroller.scrollWidth > scroller.clientWidth + 1) {
+            const left =
+              activeBtn.offsetLeft - (scroller.clientWidth - activeBtn.offsetWidth) / 2;
+            scroller.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
           }
         };
 
         setActive(0);
 
-        ctx = gsap.context(() => {
-          // Lateral pin: keep the left sidebar visible while the right panels scroll past.
-          // pinType MUST be "transform" — pinType: "fixed" breaks inside ScrollSmoother's
-          // #smooth-content because that wrapper is CSS-transformed, and `position: fixed`
-          // resolves against a transformed ancestor instead of the viewport. That's why
-          // the sidebar was disappearing on scroll.
-          //
-          // We pin the sidebar wrap (not sidebarRef itself) and end when the panels
-          // container bottom hits the viewport bottom — that keeps the sidebar in view
-          // for the exact vertical range covered by the panels.
-          if (sidebarRef.current) {
-            ScrollTrigger.create({
-              trigger: sidebarRef.current,
-              start: "top top",
-              endTrigger: panels,
-              end: "bottom bottom",
-              pin: sidebarRef.current,
-              pinType: "transform",
-              pinSpacing: false,
-              anticipatePin: 1,
-            });
-          }
+        // Lateral pin: keep the left sidebar visible while the right panels scroll past.
+        //
+        // Desktop only. Below 769px the layout collapses to a single column with the
+        // nav as a horizontal scroller above the panels, so pinning it there dragged
+        // the transformed sidebar down over the panels as you scrolled.
+        //
+        // pinType MUST be "transform" — pinType: "fixed" breaks inside ScrollSmoother's
+        // #smooth-content because that wrapper is CSS-transformed, and `position: fixed`
+        // resolves against a transformed ancestor instead of the viewport.
+        //
+        // gsap.matchMedia() reverts the trigger (and the inline transforms it wrote)
+        // automatically when the query stops matching, e.g. on rotate or resize.
+        const matchMedia = gsap.matchMedia();
+        mm = matchMedia;
+        matchMedia.add("(min-width: 769px)", () => {
+          const sidebar = sidebarRef.current;
+          if (!sidebar) return;
 
+          const pinTrigger = ScrollTrigger.create({
+            trigger: sidebar,
+            start: "top top",
+            endTrigger: panels,
+            end: "bottom bottom",
+            pin: sidebar,
+            pinType: "transform",
+            pinSpacing: false,
+            anticipatePin: 1,
+          });
+
+          return () => pinTrigger.kill();
+        });
+
+        ctx = gsap.context(() => {
           panelEls.forEach((panel, i) => {
             gsap.fromTo(
               panel,
@@ -209,7 +232,10 @@ export function Experience() {
     };
 
     init();
-    return () => ctx?.revert();
+    return () => {
+      mm?.revert();
+      ctx?.revert();
+    };
   }, []);
 
   const scrollToPanel = (index: number) => {

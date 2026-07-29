@@ -2764,6 +2764,17 @@ html[data-theme='light'][data-klein='on'] footer {
   position: relative; /* establishes stacking context for sticky child */
 }
 
+/* Grid children default to min-width:auto, which lets long tags and unbroken
+   strings push the whole track wider than the viewport. */
+.exp-sidebar-wrap,
+.exp-panels {
+  min-width: 0;
+}
+
+.exp-panels {
+  overflow-wrap: break-word;
+}
+
 /* Left Sidebar — GSAP ScrollTrigger will pin this with fixed positioning */
 .exp-sidebar {
   position: relative;
@@ -3116,10 +3127,25 @@ html[data-theme='light'][data-klein='on'] footer {
   .exp-sidebar {
     position: static;
     flex-direction: row;
+    align-items: stretch;
+    /* Reset the desktop pin geometry: 320px is wider than the column here, and
+       the 88px navbar clearance only makes sense while the sidebar is pinned. */
+    width: 100%;
+    max-width: 100%;
+    padding-top: 0;
     overflow-x: auto;
+    overflow-y: hidden;
     padding-bottom: 8px;
     margin-bottom: 32px;
     border-bottom: 1px solid var(--color-border);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Belt and braces: clears any inline transform left by a pin that was
+       created before a resize crossed this breakpoint. */
+    transform: none !important;
+  }
+  .exp-sidebar::-webkit-scrollbar {
+    display: none;
   }
   .exp-track {
     display: none;
@@ -3159,8 +3185,35 @@ html[data-theme='light'][data-klein='on'] footer {
   .exp-header {
     padding: 0 20px 32px;
   }
+  .exp-count {
+    margin-left: 0; /* stops the count being flung to the far edge once it wraps */
+  }
+  .exp-panel {
+    padding: 32px 0 48px;
+  }
   .exp-panel-role {
     font-size: 1.2rem;
+  }
+  /* The num and the period pill cannot sit on one line at 320-400px */
+  .exp-panel-topbar {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .exp-panel-period {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .exp-nav-item {
+    padding: 8px 12px;
+  }
+  .exp-nav-company {
+    font-size: 12px;
+  }
+  .exp-bullet-text,
+  .exp-panel-summary {
+    overflow-wrap: anywhere;
   }
 }
 
