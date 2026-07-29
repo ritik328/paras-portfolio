@@ -1,13 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { useTheme } from '@/app/lib/hooks/useTheme';
 
 /**
- * 4D Klein Bottle site background — fire palette, stereographic projection.
+ * 4D Klein Bottle site background — stereographic projection, both themes.
  *
  * Mounted once at the app root (outside ScrollSmoother's transformed wrapper so
  * `position: fixed` keeps working) and rendered behind every section.
+ *
+ * Theming — the palette flips live, without rebuilding the scene:
+ *   - dark: glowing fire palette, additive blending, bloom, light-on-dark
+ *   - light: dark clay/bronze ink, normal blending, no bloom, dark-on-cream
+ *     (additive blending is invisible against a near-white background)
  *
  * Scroll interaction:
  *   - page scroll progress (0–1) drives camera orbit/dolly, hue drift and the
@@ -20,11 +24,11 @@ import { useTheme } from '@/app/lib/hooks/useTheme';
  *   - position/`aT` buffers are shared between the point cloud and the wireframe
  *   - pixel ratio capped at 1.5, bloom skipped on mobile
  *   - RAF paused when the tab is hidden, full GPU disposal on unmount
- *   - never initialises WebGL under `prefers-reduced-motion` or light theme
+ *   - never initialises WebGL under `prefers-reduced-motion`
  */
 
 interface KleinBottleBackgroundProps {
-  /** Force on/off. Defaults to `theme === 'dark'`. */
+  /** Force on/off. Defaults to on in both themes. */
   active?: boolean;
   /** Force reduced motion. Defaults to the `prefers-reduced-motion` media query. */
   reducedMotion?: boolean;
@@ -47,7 +51,6 @@ function subscribeReducedMotion(onChange: () => void) {
 
 export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBackgroundProps = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
   const systemReduced = useSyncExternalStore(
     subscribeReducedMotion,
     () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
@@ -55,7 +58,7 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
   );
 
   const isReduced = reducedMotion ?? systemReduced;
-  const enabled = !isReduced && (active ?? theme === 'dark');
+  const enabled = !isReduced && (active ?? true);
 
   useEffect(() => {
     if (!enabled || !containerRef.current) return;
@@ -97,8 +100,6 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
       renderer.setPixelRatio(pixelRatio);
       renderer.setSize(width, height);
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 0.8;
       renderer.setClearColor(0x000000, 0);
 
       const canvas = renderer.domElement;
@@ -108,11 +109,10 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
 
       const composer = new EffectComposer(renderer);
       composer.addPass(new RenderPass(scene, camera));
-      if (!isMobile) {
-        composer.addPass(
-          new UnrealBloomPass(new THREE.Vector2(width, height), 0.55, 0.4, 0.15)
-        );
-      }
+      const bloomPass = isMobile
+        ? null
+        : new UnrealBloomPass(new THREE.Vector2(width, height), 0.55, 0.4, 0.15);
+      if (bloomPass) composer.addPass(bloomPass);
       composer.addPass(new OutputPass());
 
       // ── 4D math ────────────────────────────────────────────────────
@@ -166,35 +166,56 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
       lineGeom.setAttribute('aT', tAttr);
       lineGeom.setIndex(lineIndices);
 
+      // Shared uniforms. `uDark` = 1 in dark theme, 0 in light theme.
       const commonUniforms = {
         uHueShift: { value: 0 },
         uPixelRatio: { value: pixelRatio },
         uOpacity: { value: 0.18 },
+        uDark: { value: 1 },
       };
+
+      // Palette picked per theme:
+      //   dark  → hue 0.015–0.15, high lightness, glows outward (additive)
+      //   light → hue 0.02–0.10 (clay orange → bronze), low lightness so the
+      //           points read as ink against the #FAF9F6 surface
+      const COLOR_GLSL = `
+        vec3 kleinColor(float aT, float uHueShift, float uDark) {
+          float hue = mix(
+            mod(0.025 + aT * 0.075 + uHueShift * 0.5, 1.0),
+            mod(0.015 + aT * 0.135 + uHueShift, 1.0),
+            uDark
+          );
+          float sat = mix(0.85, 1.0, uDark);
+          float lig = mix(0.30 + 0.14 * aT, 0.32 + 0.5 * aT, uDark);
+          return hsl2rgb(vec3(hue, sat, lig));
+        }
+      `;
 
       const particleMat = new THREE.ShaderMaterial({
         uniforms: {
           uHueShift: commonUniforms.uHueShift,
           uPixelRatio: commonUniforms.uPixelRatio,
+          uDark: commonUniforms.uDark,
         },
         vertexShader: `
           attribute float aT;
           uniform float uHueShift;
           uniform float uPixelRatio;
+          uniform float uDark;
           varying vec3 vColor;
           ${HSL2RGB}
+          ${COLOR_GLSL}
           void main() {
-            float hue = mod(0.015 + aT * 0.135 + uHueShift, 1.0);
-            float lig = 0.32 + 0.5 * aT;
-            vColor = hsl2rgb(vec3(hue, 1.0, lig));
+            vColor = kleinColor(aT, uHueShift, uDark);
             vec4 mv = modelViewMatrix * vec4(position, 1.0);
             float d = length(position);
-            float sz = 0.07 + 0.24 / (1.0 + d * 0.45);
+            float sz = (0.07 + 0.24 / (1.0 + d * 0.45)) * mix(0.82, 1.0, uDark);
             gl_PointSize = sz * uPixelRatio * (340.0 / max(0.001, -mv.z));
             gl_Position = projectionMatrix * mv;
           }
         `,
         fragmentShader: `
+          uniform float uDark;
           varying vec3 vColor;
           void main() {
             vec2 c = gl_PointCoord - 0.5;
@@ -202,8 +223,11 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
             if (dist > 0.5) discard;
             float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
             alpha *= alpha;
+            // Dark theme adds an outward glow; in light theme that would only
+            // push the colour toward white, so the ink stays flat instead.
             float glow = exp(-dist * 8.0);
-            gl_FragColor = vec4(vColor + 0.18 * glow * vColor, alpha * 0.62);
+            vec3 col = vColor + uDark * 0.18 * glow * vColor;
+            gl_FragColor = vec4(col, alpha * mix(0.9, 0.62, uDark));
           }
         `,
         transparent: true,
@@ -215,15 +239,17 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
         uniforms: {
           uHueShift: commonUniforms.uHueShift,
           uOpacity: commonUniforms.uOpacity,
+          uDark: commonUniforms.uDark,
         },
         vertexShader: `
           attribute float aT;
           uniform float uHueShift;
+          uniform float uDark;
           varying vec3 vColor;
           ${HSL2RGB}
+          ${COLOR_GLSL}
           void main() {
-            float hue = mod(0.015 + aT * 0.135 + uHueShift, 1.0);
-            vColor = hsl2rgb(vec3(hue, 1.0, 0.34 + 0.4 * aT));
+            vColor = kleinColor(aT, uHueShift, uDark);
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
         `,
@@ -264,6 +290,47 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
       });
       const stars = new THREE.Points(starGeom, starMat);
       scene.add(stars);
+
+      // ── Theme switching (no scene rebuild) ─────────────────────────
+      let isDarkTheme = true;
+
+      const applyTheme = (dark: boolean) => {
+        isDarkTheme = dark;
+        commonUniforms.uDark.value = dark ? 1 : 0;
+
+        // Additive lightens whatever is behind it — great on #0d0d0c, invisible
+        // on #FAF9F6. Light theme composites normally so dark ink stays dark.
+        const blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending;
+        for (const mat of [particleMat, lineMat, starMat]) {
+          mat.blending = blending;
+          mat.needsUpdate = true;
+        }
+
+        starMat.color.set(dark ? 0x8899bb : 0x7a7a72);
+        starMat.opacity = dark ? 0.45 : 0.3;
+        starMat.size = dark ? 0.05 : 0.045;
+
+        // Filmic tone mapping crushes the light palette toward mid grey.
+        renderer.toneMapping = dark ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;
+        renderer.toneMappingExposure = dark ? 0.8 : 1.0;
+
+        // Bloom only reads bright pixels, so it does nothing useful for ink.
+        if (bloomPass) bloomPass.enabled = dark;
+      };
+
+      const readDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
+      applyTheme(readDark());
+
+      // Covers every path that changes the theme: useTheme's attribute write,
+      // the pre-hydration inline script, and cross-tab storage sync.
+      const themeObserver = new MutationObserver(() => {
+        const dark = readDark();
+        if (dark !== isDarkTheme) applyTheme(dark);
+      });
+      themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      });
 
       // ── Per-frame projection ───────────────────────────────────────
       const updateKlein = (angleXY: number, angleZW: number) => {
@@ -380,7 +447,9 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
 
         // Hue drifts within the fire range across the page.
         commonUniforms.uHueShift.value = smoothProgress * 0.055;
-        commonUniforms.uOpacity.value = 0.14 + 0.1 * Math.abs(signedVel);
+        // Light theme needs denser wireframe alpha to hold its own on cream.
+        const baseLineOpacity = isDarkTheme ? 0.14 : 0.3;
+        commonUniforms.uOpacity.value = baseLineOpacity + 0.1 * Math.abs(signedVel);
 
         stars.rotation.y = smoothProgress * 0.5 + phase * 0.01;
         stars.rotation.x = smoothProgress * 0.2;
@@ -409,6 +478,7 @@ export function KleinBottleBackground({ active, reducedMotion }: KleinBottleBack
 
       cleanupScene = () => {
         stop();
+        themeObserver.disconnect();
         window.removeEventListener('resize', handleResize);
         document.removeEventListener('visibilitychange', handleVisibility);
         if (nativeScrollHandler) window.removeEventListener('scroll', nativeScrollHandler);

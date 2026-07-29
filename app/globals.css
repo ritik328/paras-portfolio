@@ -1897,6 +1897,12 @@ body {
   opacity: 0.62;
 }
 
+/* Light theme draws dark ink instead of glow, so it can run closer to full
+   strength — the scrim below is what keeps body copy readable. */
+html[data-theme='light'] .klein-bottle-wrap .klein-bottle-canvas {
+  opacity: 0.8;
+}
+
 /* Readability scrim over the animation (only while the scene is live) */
 html[data-klein='on'] .klein-bottle-wrap::after {
   content: '';
@@ -1911,6 +1917,16 @@ html[data-klein='on'] .klein-bottle-wrap::after {
   pointer-events: none;
 }
 
+/* Light theme fades toward the warm off-white surface instead of near-black */
+html[data-theme='light'][data-klein='on'] .klein-bottle-wrap::after {
+  background: radial-gradient(
+    ellipse at 60% 40%,
+    rgba(250, 249, 246, 0.34) 0%,
+    rgba(250, 249, 246, 0.62) 55%,
+    rgba(250, 249, 246, 0.82) 100%
+  );
+}
+
 /* While the background is live, let the sections show it through.
    The attribute is set on <html> by KleinBottleBackground (dark mode only). */
 html[data-klein='on'] #top,
@@ -1923,9 +1939,27 @@ html[data-klein='on'] #contact {
   background: transparent !important;
 }
 
+/* Same, stated with light-theme specificity so it beats the
+   `[data-theme='light'] .proj-section { ... !important }` overrides above. */
+html[data-theme='light'][data-klein='on'] #top,
+html[data-theme='light'][data-klein='on'] .about-section,
+html[data-theme='light'][data-klein='on'] .skills-section,
+html[data-theme='light'][data-klein='on'] .exp-section,
+html[data-theme='light'][data-klein='on'] .proj-section,
+html[data-theme='light'][data-klein='on'] .edu-section,
+html[data-theme='light'][data-klein='on'] #contact {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 /* Footer keeps a solid base so it reads as a page terminator */
-html[data-klein='on'] footer {
+html[data-theme='dark'][data-klein='on'] footer {
   background-color: rgba(26, 26, 24, 0.82) !important;
+  backdrop-filter: blur(6px);
+}
+
+html[data-theme='light'][data-klein='on'] footer {
+  background-color: rgba(243, 241, 235, 0.85) !important;
   backdrop-filter: blur(6px);
 }
 
